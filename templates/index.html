@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation Agent</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .model-selector { text-align: center; margin-bottom: 20px; }
+        select { padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ddd; }
+        .chat-container { display: block; }
+        .chat-panel { margin: 32px; background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .chat-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #eee; }
+        .atorak-title { color: #2196F3; }
+        .raw-title { color: #FF9800; }
+        .messages { height: 400px; overflow-y: auto; border: 1px solid #eee; padding: 15px; margin-bottom: 15px; background: #fafafa; }
+        .message { margin-bottom: 15px; padding: 10px; border-radius: 8px; }
+        .user-message { background: #e3f2fd; text-align: right; }
+        .bot-message { background: #f1f8e9; }
+        .input-area { display: flex; gap: 10px; }
+        input[type="text"] { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
+        button { padding: 12px 20px; background: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
+        button:hover { background: #1976D2; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .loading { color: #666; font-style: italic; }
+        .error { color: #f44336; background: #ffebee; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        /* Add styles for markdown content */
+        .message pre { background: #f8f8f8; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        .message code { font-family: monospace; background: #f0f0f0; padding: 2px 4px; border-radius: 3px; }
+        .message table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+        .message th, .message td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .message img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>API Documentation Agent</h1>
+            <p>Compare ATORAK-enhanced documentation generation with raw LLM responses</p>
+        </div>
+        
+        <div class="model-selector">
+            <label for="model-select">Select LLM Model: </label>
+            <select id="model-select">
+                <option value="gpt">GPT (OpenAI)</option>
+                <option value="gemini">Gemini (Google)</option>
+                <option value="bedrock">Bedrock (AWS)</option>
+                <option value="deepseek">DeepSeek</option>
+            </select>
+        </div>
+
+        <div class="chat-container">
+            <div class="chat-panel">
+                <div class="chat-title atorak-title">ATORAK Agent (A Theory of Robust API Knowledge)</div>
+                <div id="atorak-messages" class="messages"></div>
+                <div class="input-area">
+                    <input type="text" id="atorak-input" placeholder="Describe the API you want to document...">
+                    <button onclick="sendMessage('atorak')">Send</button>
+                </div>
+            </div>
+
+            <div class="chat-panel">
+                <div class="chat-title raw-title">Raw LLM</div>
+                <div id="raw-messages" class="messages"></div>
+                <div class="input-area">
+                    <input type="text" id="raw-input" placeholder="Enter your prompt...">
+                    <button onclick="sendMessage('raw')">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addMessage(chatType, message, isUser = false) {
+            const messagesDiv = document.getElementById(`${chatType}-messages`);
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            // Use marked to parse markdown
+            messageDiv.innerHTML = marked.parse(message);
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function showLoading(chatType) {
+            addMessage(chatType, '<span class="loading">Generating response...</span>');
+        }
+
+        function removeLoading(chatType) {
+            const messagesDiv = document.getElementById(`${chatType}-messages`);
+            const lastMessage = messagesDiv.lastElementChild;
+            if (lastMessage && lastMessage.querySelector('.loading')) {
+                messagesDiv.removeChild(lastMessage);
+            }
+        }
+
+        function showError(chatType, error) {
+            const messagesDiv = document.getElementById(`${chatType}-messages`);
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = `Error: ${error}`;
+            messagesDiv.appendChild(errorDiv);
+        }
+
+        async function sendMessage(chatType) {
+            const input = document.getElementById(`${chatType}-input`);
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            const model = document.getElementById('model-select').value;
+            
+            // Add user message
+            addMessage(chatType, message, true);
+            input.value = '';
+            
+            // Show loading
+            showLoading(chatType);
+            
+            try {
+                const endpoint = chatType === 'atorak' ? `/atorak/chat/${model}` : `/raw/chat/${model}`;
+                
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt: message })
+                });
+                
+                removeLoading(chatType);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    showError(chatType, data.error);
+                } else {
+                    addMessage(chatType, data.response);
+                }
+                
+            } catch (error) {
+                removeLoading(chatType);
+                showError(chatType, error.message);
+            }
+        }
+
+        // Allow Enter key to send messages
+        document.getElementById('atorak-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage('atorak');
+        });
+
+        document.getElementById('raw-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage('raw');
+        });
+    </script>
+</body>
+</html>
