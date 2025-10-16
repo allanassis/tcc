@@ -4,6 +4,7 @@ local_example = """
 ### Input
 ```
 "Generate API documentation for the package located in the following directory ./src/interfaces/cli/cli.py. Try to identify the public APIs of the package and the most important parts of these API to use in the documentation."
+You MUST output ONLY the documentation in Markdown format, no more data.
 ```
 
 ### Output

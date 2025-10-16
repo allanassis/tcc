@@ -3,6 +3,9 @@ node_uml_example = """
 
 ### Input 
 ```
+Generate API documentation for the package in the following address https://github.com/allanassis/node-uml. You can search on the web to understand what are the most importants parts to be added in the documentation.
+You MUST output ONLY the documentation in Markdown format, no more data.
+```
 
 ### Output
 
