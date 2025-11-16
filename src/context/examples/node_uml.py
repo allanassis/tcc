@@ -14,83 +14,139 @@ You MUST output ONLY the documentation in Markdown format, no more data.
 
 ## Overview
 
-`node-uml` is a Node.js package designed to generate UML diagrams from your plain text descriptions. The tool helps developers and teams visually represent and document system architecture, classes, and relationships through UML diagrams automatically. It supports various diagram types including class diagrams and supports importing code to generate UML models.
+`node-uml` is a Node.js package designed to generate UML (Unified Modeling Language) diagrams from plain text descriptions. It is a lightweight tool that helps developers and teams visualize and document software designs and architectures by converting textual UML descriptions into graphical diagrams. The tool supports generating various types of UML diagrams and outputs them in popular image formats such as SVG and PNG.
 
-The primary goal of `node-uml` is to simplify the process of creating and maintaining UML diagrams linked directly to source code, enabling better system understanding, design validation, and communication among developers.
+The main domain concepts involved in `node-uml` include:
 
-## Features and Capabilities
+- **UML Diagrams:** Visual representations of software system elements, such as classes, relationships, and interactions.
+- **PlantUML Syntax:** A plain text language used to describe UML diagrams that the tool interprets.
+- **Diagram Generation:** Transforming plain text UML descriptions into graphical formats using PlantUML rendering.
 
-- Support for generating output in SVG and other visual formats.
-- Supports customization of output and diagram configuration.
-- Useful for documentation, reverse engineering, and design validation.
+`node-uml` streamlines diagram creation, making it easier to maintain up-to-date software documentation, reverse engineer designs from code, and communicate architecture among teams.
+
+---
 
 ## Installation
 
-To install `node-uml`, you need Node.js installed on your system.
+To use `node-uml`, you need Node.js installed on your system (version 10 or higher is recommended).
 
-### Using npm
+### Install via npm globally
 
 ```bash
 npm install -g node-uml
 ```
 
-### Alternative: Use with npx (without global install)
+### Install as a local dependency
 
 ```bash
-npx node-uml <options>
+npm install node-uml
 ```
 
-The package works cross-platform on Linux, macOS, and Windows as long as Node.js is available.
+`node-uml` works cross-platform (Linux, macOS, Windows) as long as Node.js is installed.
+
+---
 
 ## Usage and Examples
+
+### Usage as a Command-line Tool
+
+Once installed globally, you can generate UML diagrams from a PlantUML text description file:
+
+```bash
+node-uml -i input.uml -o output.svg
+```
+
+Where:
+
+- `-i` or `--input`: Path to the UML text file.
+- `-o` or `--output`: Filename of the generated diagram image (SVG, PNG, or TXT).
+
+### Usage in JavaScript Code
+
+To generate UML diagrams programmatically:
 
 ```javascript
 const generate = require('node-uml')
 
-const umlText = 'Bob -> Alice : hello'
+const umlText = `
+@startuml
+Alice -> Bob: Authentication Request
+Bob --> Alice: Authentication Response
+@enduml
+`
 
-generate(umlText, { path: '.', outputName: 'diagram.svg' }).then((resp) => console.log(resp))
+generate(umlText, { path: '.', outputName: 'diagram.svg', type: 'svg' })
+  .then(() => {
+    console.log('UML diagram generated successfully.')
+  })
+  .catch(err => {
+    console.error('Error generating UML:', err)
+  })
 ```
 
-## API Reference 
+### Parameters for `generate` function:
 
-### generate
+- `text` (string): UML description in PlantUML syntax.
+- `options` (object):
+  - `path` (string): Directory path where output files will be saved.
+  - `outputName` (string): Filename for the generated diagram.
+  - `type` (string): Image format type (`svg`, `png`, or `txt`).
 
-- Parameters:
+The promise resolves when diagram generation completes successfully.
 
-  - `text` (string): Text representing the plantuml text
+---
+
+## API Reference
+
+### `generate(text, options)`
+
+Generates a UML diagram based on the given PlantUML text.
+
+- **Parameters:**
+  - `text` (string): The PlantUML text description of the UML diagram.
   - `options` (object):
-  - - `options.type`: The type of image, can be any value in the list ["png", "svg", "txt"]
-  - - `options.outputName`: The name of the image file that will be generated
-  - - `options.path`: The path that the image will be generated
+    - `type` (string): The format of the output diagram image. Values include `"png"`, `"svg"`, and `"txt"`.
+    - `outputName` (string): The name of the output file for the generated diagram.
+    - `path` (string): The directory path to save the output file.
 
-- Returns: Promise that resolves when generation completes.
+- **Returns:** A `Promise` that resolves when the diagram is successfully generated, or rejects with an error if the generation fails.
+
+### Example
+
+```js
+generate(umlText, { path: '.', outputName: 'diagram.svg', type: 'svg' })
+  .then(() => console.log('Diagram created'))
+  .catch(err => console.error(err))
+```
+
+---
 
 ## Contributing
 
-Contributions are welcome! To contribute:
+Contributions to `node-uml` are welcome! To contribute improvements, fix bugs, or add features:
 
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature-name`).
-3. Commit your changes (`git commit -m 'Add feature'`).
-4. Push to the branch (`git push origin feature-name`).
-5. Open a Pull Request describing your modifications.
+1. Fork the repository on GitHub.
+2. Create a new branch for your feature or bugfix (`git checkout -b feature-name`).
+3. Make your changes and add tests if applicable.
+4. Commit your work (`git commit -m 'Add feature'`).
+5. Push to your fork (`git push origin feature-name`).
+6. Open a Pull Request describing your changes.
 
-Ensure your code follows the existing style and includes tests for new functionality.
+Please ensure your code follows the existing style and that you test your changes before submitting.
+
+---
 
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](https://github.com/allanassis/node-uml/blob/master/LICENSE) file for details.
 
-## Contact
-
-- Author: Allan Assis
-- Repository: [https://github.com/allanassis/node-uml](https://github.com/allanassis/node-uml)
-- Issues and feature requests: [GitHub Issues](https://github.com/allanassis/node-uml/issues)
-
 ---
 
-This README provides a focused overview for users and developers to understand what `node-uml` does, how to install and use it, and how to contribute or get support effectively.
+## Contact
+
+- **Author:** Allan Assis
+- **Repository:** [https://github.com/allanassis/node-uml](https://github.com/allanassis/node-uml)
+- **Issues and feature requests:** Use the [GitHub Issues](https://github.com/allanassis/node-uml/issues) page to report problems or suggest enhancements.
 
 ```
 

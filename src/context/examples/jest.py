@@ -228,11 +228,6 @@ Jest is licensed under the [MIT License](https://github.com/facebook/jest/blob/m
 - Community: [https://jestjs.io/community](https://jestjs.io/community)
 
 For questions or discussion, visit the Jest Discord or GitHub Issues.
-
----
-
-This documentation provides a clear understanding of Jest's purpose, features, and usage patterns to help you write and run tests effectively in your JavaScript projects.
-
 ```
 
 

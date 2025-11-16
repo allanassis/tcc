@@ -9,14 +9,13 @@ You MUST output ONLY the documentation in Markdown format, no more data.
 
 ### Output
 ```.md
-INFO Reading file: ./src/interfaces/cli/cli.py                                                                                                                                                                     
 # CLI Documentation Generator
 
 ## Overview
 
 This package provides a command-line interface (CLI) tool designed to generate API documentation for software packages following the ATORAK principles. It leverages Large Language Models (LLMs) such as GPT, Gemini, or Bedrock to assist in creating concise, structured, and pedagogically effective documentation. The tool supports documentation generation from both local directories and remote repositories.
 
-## Features and Capabilities
+### Features and Capabilities
 
 - Command-line interface for easy integration and automation.
 - Supports multiple LLM backends: GPT, Gemini, and Bedrock.
@@ -84,7 +83,6 @@ This project is licensed under the terms specified in the repository's LICENSE f
 ## Contact
 
 For questions, issues, or contributions, please contact the maintainers via the repository's issue tracker or email listed in the project metadata.
-
 ```
 
 
