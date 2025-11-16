@@ -9,110 +9,82 @@ You MUST output ONLY the documentation in Markdown format, no more data.
 
 ### Output
 ```.md
-# CLI Module Documentation for Package Documentation Generator
+INFO Reading file: ./src/interfaces/cli/cli.py                                                                                                                                                                     
+# CLI Documentation Generator
 
-The CLI module provides a command-line interface to generate API documentation for software packages using the principles of ATORAK (A Theory of Robust API Knowledge). It leverages an LLM (Large Language Model) manager to process the input package path and generate comprehensive documentation output.
+## Overview
 
----
+This package provides a command-line interface (CLI) tool designed to generate API documentation for software packages following the ATORAK principles. It leverages Large Language Models (LLMs) such as GPT, Gemini, or Bedrock to assist in creating concise, structured, and pedagogically effective documentation. The tool supports documentation generation from both local directories and remote repositories.
 
-## Conceptual Introduction
+## Features and Capabilities
 
-### Domain Concepts
+- Command-line interface for easy integration and automation.
+- Supports multiple LLM backends: GPT, Gemini, and Bedrock.
+- Accepts package paths as local folders or remote repository URLs.
+- Produces documentation emphasizing clarity, relevance, and knowledge transfer.
+- Gracefully handles exceptions and provides informative error reporting.
 
-- **API Documentation Generation:** The process of automatically creating descriptive and structured documentation for software APIs to enhance developer understanding.
-- **Command-Line Interface (CLI):** A text-based interface allowing users to interact with programs through commands.
-- **Package Path:** The location of the software package to be documented. This can be a local folder, a GitHub repo, or other repository types.
-- **LLM Model:** A large language model used to analyze and generate text. Supported models include 'gpt', 'gemini', and 'bedrock'.
+## Installation
 
-### Mapping to API Terms
+1. **Environment Setup**
 
-- The main CLI entry point is the `main()` function, invoked when running the CLI script.
-- CLI arguments (`--path`, `--local`, `--model`) correspond to inputs for the documentation generation process.
-- The CLI internally uses the `LLMManager` class's `generate_doc` method to create the documentation output.
-- Errors in processing or invalid input result in program termination with an error message.
+   Ensure Python 3 is installed.
 
----
+2. **Clone and Install Dependencies**
 
-## Execution Facts
+   ```bash
+   git clone <repository-url>
+   cd <repository-folder>
+   pip install -r requirements.txt
+   ```
 
-### Public API
+3. **Environment Variables**
 
-#### `main()`
+   The CLI uses `dotenv` to load environment variables. Create a `.env` file in the root directory as needed for LLM API keys and configurations.
 
-- **Description:** Entry function to parse command-line arguments and trigger the documentation generation.
-- **Inputs:**
-  - `--path` (string, required): Path to the target package (GitHub repo URL or local directory).
-  - `--local` (boolean-like flag, optional, default: False): Indicates if the path is local.
-  - `--model` (string, optional, default: 'gpt'): LLM model selection from ['gpt', 'gemini', 'bedrock'].
-- **Outputs:**
-  - Prints generated API documentation text to standard output.
-- **Errors:**
-  - Prints error message to standard error and exits with status code 1 on failure.
-
-### Constraints and Behavior
-
-- Must be run in an environment with `dotenv` configured for environment variables.
-- Relies on `LLMManager` implementation and its connectivity or setup to operate correctly.
-- The script expects the package path to be a valid location accessible with proper permissions.
-- Defaults to GPT model if no model specified.
-- Provides CLI feedback synchronously on console.
-
----
-
-## API Usage Patterns
-
-### Typical Use Case: Generating API Documentation via CLI
-
-#### What the code does
-
-- Receives user CLI input parameters for package location and model choice.
-- Uses an LLM-driven backend (`LLMManager`) to generate robust API documentation text.
-- Outputs the generated documentation to the console.
-
-#### How it does it
-
-- Uses `argparse` to parse and validate CLI arguments.
-- Instantiates the `LLMManager`.
-- Calls `generate_doc` with parsed inputs.
-- Catches and displays exceptions gracefully.
-
-#### Why it's structured that way
-
-- Simplifies the usage of the documentation generator to a single CLI command.
-- Allows flexible input for package location and model selection.
-- Uses environment configuration for settings (`dotenv`).
-- Provides user-friendly error handling for robustness.
-
-#### Variation Points
-
-- Change the `--path` argument to different repositories or local directories to document different packages.
-- Switch the `--model` argument between supported LLMs according to need or availability.
-- Extend CLI with additional options for future configuration (e.g., output format, verbosity).
-
----
-
-## Example CLI Usage
+## Usage and Examples
 
 ```bash
-python3 cli.py --path=https://github.com/example/repo --model=gpt
+python src/interfaces/cli/cli.py --path <package_path> [--local] [--model <model_choice>]
 ```
 
-- **What:** Runs the CLI tool to generate API documentation for a GitHub repository using the GPT model.
-- **How:** Parses the path and model from CLI, calls `LLMManager.generate_doc()`, and outputs results.
-- **Why:** Enables quick, repeatable documentation generation from various package sources.
-- **Variation:** Use `--local=true` to specify the path is a local folder. Swap model to 'gemini' or 'bedrock'.
+### Example 1: Generate documentation for a local package using GPT
 
----
+```bash
+python src/interfaces/cli/cli.py --path ./my_local_package --local True --model gpt
+```
 
-## Additional Developer Notes
+### Example 2: Generate documentation for a remote GitHub repository using Bedrock
 
-- Ensure `python-dotenv` is installed and `.env` is configured for environment variables if required.
-- The CLI depends on `src.llm_manager.LLMManager` for the core logic — consulting its documentation is recommended.
-- Catching broad exceptions ensures unexpected errors do not crash silently.
+```bash
+python src/interfaces/cli/cli.py --path https://github.com/user/repo --model bedrock
+```
 
----
+Expected output: The generated API documentation printed to standard output.
 
-This documentation integrates the domain concept of CLI-driven package documentation, execution facts about input parameters and behavior, and usage patterns describing how to invoke and adapt the CLI for different tasks.
+## API Reference
+
+- `--path`: (Required) The path of the package to document. This can be a local directory or a remote repository URL.
+- `--local`: (Optional) Indicates if the package path is local (`True` or `False`). Default is `False`.
+- `--model`: (Optional) LLM model to use for documentation generation. Choices are `gpt` (default), `gemini`, `bedrock`.
+
+## Contributing
+
+Contributions are welcome to enhance functionality, add support for more LLM providers, improve error handling, or extend CLI options. Please follow the repository's contribution guidelines:
+
+- Fork the repository.
+- Create a dedicated feature branch.
+- Submit pull requests with clear descriptions of your changes.
+- Include tests where applicable.
+
+## License
+
+This project is licensed under the terms specified in the repository's LICENSE file.
+
+## Contact
+
+For questions, issues, or contributions, please contact the maintainers via the repository's issue tracker or email listed in the project metadata.
+
 ```
 
 

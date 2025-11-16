@@ -9,193 +9,230 @@ You MUST output ONLY the documentation in Markdown format, no more data.
 
 ### Output
 ```md
-# Jest Documentation
+# Jest
 
-Jest is a delightful JavaScript Testing Framework with a focus on simplicity. It provides an integrated zero-configuration testing experience, supporting snapshot testing, mock functions, asynchronous testing, and code coverage analysis. Jest is widely used for testing React applications but supports any JavaScript codebase.
+## Overview
 
----
+Jest is a delightful JavaScript Testing Framework with a focus on simplicity. It is designed to ensure correctness of any JavaScript codebase by running tests in a predictable, fast, and reliable manner. Originally developed at Facebook, Jest works out of the box for most JavaScript projects, especially those using React, Node.js, or Babel. Jest supports snapshot testing, mock functions, and parallel test execution to provide a full-featured testing experience.
 
-## Conceptual Introduction
+### Purpose and Goals
 
-### Domain Concepts
-
-- **Testing Framework:** Jest is a tool that helps developers write and run tests to verify that their code works as expected.
-- **Test Suites and Test Cases:** In Jest, tests are organized in suites (`describe` blocks) and cases (`test` or `it` blocks).
-- **Assertions:** Statements that specify expected outcomes using Jest’s matcher functions like `expect(value).toBe(expected)`.
-- **Mock Functions:** Functions that replace real implementations to isolate units under test and simulate behavior.
-- **Snapshot Testing:** Captures the rendered output of components or functions and compares future runs to detect unexpected changes.
-- **Code Coverage:** The measurement of how much of the codebase is exercised by tests, generating reports for analysis.
-- **Watch Mode:** Runs tests automatically based on file changes to provide rapid feedback during development.
-
-### Mapping to API Terms
-
-- `describe()`: Defines a test suite grouping.
-- `test()` / `it()`: Defines an individual test case.
-- `expect()`: Creates an assertion object to test values.
-- Mocking utilities such as `jest.fn()` and `jest.mock()` simulate dependencies.
-- Snapshots are created and compared using `toMatchSnapshot()`.
-- CLI commands and configuration control execution environment, watch mode, coverage, and reporters.
+- Provide an intuitive and zero-configuration testing experience.
+- Support testing of frontend and backend JavaScript code.
+- Enable fast and reliable test execution with parallelism and intelligent test selection.
+- Offer rich mocking capabilities to isolate code and create robust tests.
+- Facilitate snapshot testing to capture and validate UI and data output changes.
 
 ---
 
-## Execution Facts
+## Features and Capabilities
 
-### Core API (Functions and Methods)
-
-| API Element              | Inputs                                      | Outputs                  | Errors / Side Effects                                      | Defaults / Constraints                        |
-|--------------------------|---------------------------------------------|-------------------------|------------------------------------------------------------|-----------------------------------------------|
-| `describe(name, fn)`      | `name: string`, `fn: function`              | None                    | Runs contained tests in a suite; errors propagate as test failures | Nestable for organize tests; name required    |
-| `test(name, fn, timeout?)`| `name: string`, `fn: function`, `timeout? number` | None                    | Runs a test case; async tests must return Promise or call done callback | Timeout defaults to 5s; override per test     |
-| `expect(value)`           | `value: any`                                 | Expectation object       | Constructs matcher API for assertions                      | Matchers chained after call                    |
-| `jest.fn(implementation?)`| Optional function to mock                   | Mock function            | Tracks calls, instances, and allow manual resolution      | Records calls for inspection                    |
-| `jest.mock(moduleName, factory?, options?)` | Module specifier string or path, factory function for manual mock | Mocks imported module    | Replaces module calls with mocks during test runtime      | Hoisted to top of scope; can use automock      |
-
-### CLI Execution Facts
-
-| Command                   | Description                                   | Inputs              | Outputs                                        | Constraints & Notes                             |
-|---------------------------|-----------------------------------------------|---------------------|------------------------------------------------|-------------------------------------------------|
-| `jest`                    | Runs all tests                                | CLI options         | Test results printed, code coverage optional | Supports config via `jest.config.js` or package.json; supports parallel test running |
-| `jest --watch`            | Watch mode to re-run tests on file changes    | CLI options         | Tests rerun on save; interactive test running | Monitors git changes or all files; interactive filters supported                        |
-| `jest --coverage`         | Generates a coverage report for the test run  | CLI options         | Coverage reports in multiple formats          | Instrumentation needed; thresholds configurable |
-| `jest --updateSnapshot`   | Update existing snapshot files                 | CLI options         | Overwrites snapshots detected as outdated     | Use carefully to avoid overwriting valid snapshots |
-
-### Configuration
-
-- Jest supports configuration via `jest.config.js`, JSON, or `package.json`.
-- Configuration properties control test environment, coverage thresholds, module paths, and transform pipelines.
-- Supports custom reporters, setup files, test environment selections (jsdom or node).
+- **Zero configuration**: Automatic setup for most projects, minimal setup required.
+- **Snapshots**: Easily create and verify UI or data snapshots.
+- **Isolated tests**: Each test file is sandboxed to avoid side effects.
+- **Fast and parallel**: Runs tests concurrently by leveraging worker threads.
+- **Mocking**: Supports manual and automatic mocks for functions and modules.
+- **Code coverage**: Built-in support for code coverage reports.
+- **Watch mode**: Intelligent rerun of tests related to changed files.
+- **Rich reporters**: Includes console and third-party reporters for test outcomes.
+- **Integrations**: Support for Babel, TypeScript, React, Vue, Angular, Node.js, and many more.
 
 ---
 
-## API Usage Patterns
+## Installation
 
-### Pattern 1: Writing and Organizing Tests
+### Prerequisites
 
-#### What the code does
+- Node.js (>=10)
+- npm or Yarn package manager
 
-Organizes tests in logical groups (`describe`), defines individual tests (`test` or `it`), and uses `expect` assertions to validate outcomes.
+### Using npm
 
-#### How it does it
+```bash
+npm install --save-dev jest
+```
 
-- `describe` scopes tests for clarity and reuse.
-- `test` runs a single assertion case, supporting synchronous and asynchronous code.
-- `expect` provides flexible matchers like `.toBe()`, `.toEqual()`, `.toHaveBeenCalled()`, etc.
+### Using Yarn
 
-#### Why it’s structured that way
+```bash
+yarn add --dev jest
+```
 
-- Makes test suites readable and maintainable.
-- Supports clear failure reports with descriptive naming.
-- Allows modular testing of discrete units of behavior.
+### Adding Jest to your project
 
-#### Variation Points
+- Use the provided CLI to initialize Jest config or create a `jest.config.js` file manually.
+- Run jest tests with:
 
-- Use `beforeEach` and `afterEach` hooks inside `describe` to setup/teardown shared state.
-- Parameterized tests via `test.each` for data-driven scenarios.
+```bash
+npx jest
+```
+or
 
----
+```bash
+yarn jest
+```
 
-### Pattern 2: Mocking Dependencies
+### Global installation (optional)
 
-#### What the code does
-
-Replaces real module dependencies or functions with controllable mock implementations to isolate units and simulate different behaviors.
-
-#### How it does it
-
-- `jest.fn()` creates mock functions tracking calls and allowing return value manipulation.
-- `jest.mock()` replaces entire modules with custom or auto-generated mocks at load time.
-- Mock function methods (`mockReturnValue`, `mockImplementation`) define behaviors.
-
-#### Why it’s structured that way
-
-- Enables testing units independently from external dependencies.
-- Empowers testing edge cases by simulating specific responses or errors.
-- Helps verify interactions (e.g., "was this function called with these parameters?").
-
-#### Variation Points
-
-- Use manual mocks stored under `__mocks__` to customize module behavior.
-- Reset mocks between tests with `jest.resetAllMocks()`.
+```bash
+npm install -g jest
+```
 
 ---
 
-### Pattern 3: Snapshot Testing
+## Usage and Examples
 
-#### What the code does
+### Basic Test Example
 
-Captures rendered output or data structures and compares them against stored "snapshots" to detect unintended changes.
+Create a test file `sum.test.js`:
 
-#### How it does it
+```js
+const sum = (a, b) => a + b;
 
-- Use `expect(value).toMatchSnapshot()` to automate snapshot creation and verification.
-- Jest stores snapshots as text files alongside tests.
-- Failing tests indicate snapshot divergence.
-
-#### Why it’s structured that way
-
-- Provides a fast, reliable way to verify UI or serialized output.
-- Reduces manual assertion writing for complex outputs.
-- Snapshots can be updated when intentional changes occur.
-
-#### Variation Points
-
-- Parametrize snapshots with `toMatchInlineSnapshot()` for compact tests.
-- Combine with mock functions for isolated component renders.
-
----
-
-## Example Pattern: Simple Test Suite with Mocks and Snapshot
-
-```javascript
-// math.js
-function add(a, b) {
-  return a + b;
-}
-module.exports = { add };
-
-// math.test.js
-const math = require('./math');
-
-describe('Math utils', () => {
-  test('adds two numbers correctly', () => {
-    expect(math.add(1, 2)).toBe(3);
-  });
-
-  test('adds returns snapshot', () => {
-    expect(math.add(5, 10)).toMatchSnapshot();
-  });
-});
-
-// mocking example
-jest.mock('./math', () => ({
-  add: jest.fn((a, b) => 42),
-}));
-
-test('mocked add returns fixed value', () => {
-  const math = require('./math');
-  expect(math.add(1, 2)).toBe(42);
-  expect(math.add).toHaveBeenCalledWith(1, 2);
+test('adds 1 + 2 to equal 3', () => {
+  expect(sum(1, 2)).toBe(3);
 });
 ```
 
-- **What:** Defines test suite for math utils, asserts correctness, and creates a snapshot. Demonstrates mocking the `add` function.
-- **How:** Uses `describe` and `test` for organization, `expect` for assertions, and `jest.mock` to replace the module during a test.
-- **Why:** Shows core Jest mechanisms to ensure test reliability and isolation.
-- **Variation:** Modify the mock implementation for different behaviors or add async tests.
+Run tests with:
+
+```bash
+npx jest
+```
+
+Expected output:
+
+```
+ PASS  ./sum.test.js
+  ✓ adds 1 + 2 to equal 3 (5 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+```
 
 ---
 
-## Additional Developer Notes
+### Snapshot Testing Example
 
-- Jest automatically finds tests in `__tests__` directories or files with `.test.js`/`.spec.js` suffixes.
-- Supports Babel and TypeScript through transformations (`babel-jest`, `ts-jest`).
-- Integrates easily with Continuous Integration (CI) servers and coverage tools.
-- Offers advanced features like custom matchers and JSON reporters for extensibility.
-- For performance, isolate slow tests or use selective running with `--testNamePattern`.
+Test file `link.test.js`:
+
+```js
+const Link = () => {
+  return '<a href="https://jestjs.io">Jest</a>';
+};
+
+test('renders correctly', () => {
+  expect(Link()).toMatchSnapshot();
+});
+```
+
+Run the test to create a snapshot. On subsequent runs, Jest verifies the output against the stored snapshot.
 
 ---
 
-This documentation integrates Jest’s domain concepts, execution facts, and usage patterns to provide a robust foundation for developers aiming to write reliable, maintainable JavaScript tests with Jest.
+### Mock Function Example
+
+```js
+test('mock function example', () => {
+  const mockFn = jest.fn().mockReturnValue(42);
+
+  expect(mockFn()).toBe(42);
+  expect(mockFn).toHaveBeenCalledTimes(1);
+});
+```
+
+---
+
+## API Reference
+
+### `jest([options])`
+
+Runs Jest test runner with specified options.
+
+- `options` (object): Configuration options for Jest CLI.
+
+---
+
+### `test(name, fn, timeout)`
+
+Defines a test case.
+
+- `name` (string): Descriptive name of the test.
+- `fn` (function): Test implementation.
+- `timeout` (number, optional): Timeout in milliseconds.
+
+---
+
+### `expect(value)`
+
+Creates an assertion object.
+
+- `.toBe(value)`: Asserts value equality.
+- `.toHaveBeenCalledTimes(number)`: Asserts mock function call count.
+- `.toMatchSnapshot()`: Asserts value matches stored snapshot.
+
+---
+
+### `jest.fn(implementation)`
+
+Creates a new mock function.
+
+- `implementation` (function, optional): Custom mock implementation.
+
+---
+
+### Configuration Options (`jest.config.js` structure)
+
+- `testEnvironment`: Environment for tests (`node`, `jsdom`, etc.).
+- `transform`: Maps file extensions to transformers (e.g., Babel).
+- `moduleNameMapper`: Module path aliases and mocks.
+- `setupFilesAfterEnv`: List of files to configure test framework before tests run.
+- `collectCoverage`: Collect code coverage information.
+- `coverageDirectory`: Output directory for coverage reports.
+
+---
+
+## Contributing
+
+Jest is open source and welcomes contributions!
+
+### How to contribute
+
+1. Fork the repository on GitHub.
+2. Create a feature branch or bugfix branch.
+3. Write tests for your changes.
+4. Follow coding style guidelines.
+5. Submit a pull request with a clear description.
+
+### Development setup
+
+- Clone the repo
+- Run `yarn install` to install dependencies.
+- Use `yarn test` to run tests.
+- Use `yarn build` to build the system.
+
+Refer to the [CONTRIBUTING.md](https://github.com/facebook/jest/blob/main/CONTRIBUTING.md) file in the repo for detailed instructions.
+
+---
+
+## License
+
+Jest is licensed under the [MIT License](https://github.com/facebook/jest/blob/main/LICENSE).
+
+---
+
+## Contact
+
+- Official repo: [https://github.com/facebook/jest](https://github.com/facebook/jest)
+- Twitter: [@jestjs](https://twitter.com/jestjs)
+- Community: [https://jestjs.io/community](https://jestjs.io/community)
+
+For questions or discussion, visit the Jest Discord or GitHub Issues.
+
+---
+
+This documentation provides a clear understanding of Jest's purpose, features, and usage patterns to help you write and run tests effectively in your JavaScript projects.
+
 ```
 
 
