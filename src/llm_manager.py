@@ -7,12 +7,6 @@ from agno.models.google import Gemini
 
 from src.context.main import ATORAK_CONTEXT
 
-ATORAK_CONTEXT = """
-You are an expert API documentation generator based on "A Theory of Robust API Knowledge" paper. 
-Given the following instructions create a documentation based on the paper guidelines to create documentation.
-
-""" + ATORAK_CONTEXT
-
 class LLMManager:
     def __init__(self):
         self.providers = {
@@ -39,9 +33,7 @@ class LLMManager:
         provider = self.get_provider(model)
         prompt = f"Generate API documentation for the package in the following address {path}. You can search on the web to understand what are the most importants parts to be added in the documentation."
         if local:
-            prompt = f"Generate API documentation for the package located in the following directory {path}. Try to identify the public APIs of the package and the most important parts of these API to use in the documentation."
-
-        prompt = prompt + "You MUST output ONLY the documentation in Markdown format, no more data."
+            prompt = f"Generate API documentation for the package located in the following directory {path}. Try to identify the public APIs of the package and the most important parts of these API to use in the documentation. Read some local files if necessary."
 
         agent = Agent(
             name="API Documentation Generator",

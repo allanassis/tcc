@@ -1,6 +1,6 @@
 import os
 import sys
-from server import app
+from src.interfaces.http.handlers import app
 
 def check_env_file():
     if not os.path.exists('.env'):
