@@ -2,21 +2,23 @@
 
 ## Overview
 
-Moment.js is a popular JavaScript library for parsing, validating, manipulating, and formatting dates and times in JavaScript. It provides a simple and consistent API to handle date operations, overcoming many limitations of the native JavaScript Date object. Moment.js supports multiple formats, locales, and time zones, enabling developers to work effortlessly with dates and times across different requirements and regions.
+Moment.js is a widely-used JavaScript library designed for parsing, validating, manipulating, and displaying dates and times in JavaScript. It simplifies working with dates by providing an intuitive and rich API for handling date-time operations, formatting, and internationalization. Moment.js models several key domain concepts related to time and calendars:
 
-### Domain Concepts
+- **Date and Time Representations:** Moments encapsulate a point in time with support for time zones and locales.
+- **Parsing:** Convert date/time strings into Moment objects using flexible formats or heuristics.
+- **Formatting:** Convert Moment objects to strings with specified formats or localized outputs.
+- **Manipulation:** Add, subtract, set, or query parts of a date/time (e.g., day, month, year, hour).
+- **Comparison:** Compare moments for equality, order, or duration differences.
+- **Durations and Intervals:** Represent spans of time, perform arithmetic, and format them.
+- **Localization:** Support for various locales and languages for formatting and parsing.
 
-- **Date and Time Parsing:** Interpreting strings or timestamps into Date objects.
-- **Date Manipulation:** Operations such as adding, subtracting, starting and ending units of time.
-- **Date Formatting:** Converting Date objects to strings in various human-readable or standardized formats.
-- **Locale Support:** Handling of different languages, calendars, and formatting conventions.
-- **Relative Time:** Displaying time differences in natural language (e.g., "3 minutes ago").
-
-Moment.js is widely used in web and server-side applications to handle complex date-time logic reliably.
+Moment.js serves as a foundational tool in many JavaScript projects requiring robust date and time handling, abstracting away many of JavaScript's native Date pitfalls.
 
 ---
 
 ## Installation
+
+Moment.js can be installed in various environments.
 
 ### Using npm
 
@@ -30,167 +32,200 @@ npm install moment
 yarn add moment
 ```
 
-### Browser Usage
+### Using CDN
 
-Include Moment.js via CDN in your HTML:
+Include directly in HTML via:
 
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 ```
 
+Moment.js works in Node.js and all modern browsers.
+
 ---
 
 ## Usage and Examples
 
-### Creating Moment Objects
+### Creating Moments
+
+Create a moment representing the current date and time:
 
 ```js
-// Current date and time
+const moment = require("moment");
 const now = moment();
-
-// Parsing from string
-const birthday = moment("1990-12-25");
-
-// Parsing with specific format
-const custom = moment("12-25-1990", "MM-DD-YYYY");
-
-// From Unix timestamp (seconds)
-const timestamp = moment.unix(1609459200);
+console.log(now.format());
+// Outputs ISO 8601 format, e.g. 2024-06-01T14:05:32+00:00
 ```
 
-### Formatting Dates
+Create a moment from a specific date string:
 
 ```js
-console.log(now.format("YYYY-MM-DD"));      // 2024-06-01
-console.log(now.format("dddd, MMMM Do"));   // Saturday, June 1st
+const birthday = moment("1990-12-25", "YYYY-MM-DD");
+console.log(birthday.format("MMMM Do, YYYY"));
+// Outputs "December 25th, 1990"
+```
+
+### Parsing Dates with Custom Formats
+
+```js
+const dateStr = "31/01/2024 15:30";
+const date = moment(dateStr, "DD/MM/YYYY HH:mm");
+console.log(date.format());
+// Outputs parsed ISO string
 ```
 
 ### Manipulating Dates
 
-```js
-const nextWeek = now.add(7, 'days');
-const lastMonth = now.subtract(1, 'months');
+Add 7 days:
 
-// Start or end of time unit
-const startOfYear = now.startOf('year');
-const endOfDay = now.endOf('day');
+```js
+const nextWeek = moment().add(7, "days");
+console.log(nextWeek.format("YYYY-MM-DD"));
 ```
 
-### Calculating Differences and Durations
+Subtract 3 months:
 
 ```js
-const past = moment("2024-01-01");
-const diffDays = now.diff(past, 'days');    // Number of days difference
-
-const duration = moment.duration(2, 'hours');
-console.log(duration.humanize());           // "2 hours"
+const threeMonthsAgo = moment().subtract(3, "months");
+console.log(threeMonthsAgo.format("YYYY-MM-DD"));
 ```
 
-### Relative Time
+Set specific units:
 
 ```js
-console.log(moment().startOf('day').fromNow());   // e.g. "5 hours ago"
-console.log(moment("2025-01-01").fromNow());      // e.g. "in 6 months"
+const newYear = moment().month(0).date(1);
+console.log(newYear.format("YYYY-MM-DD")); // Jan 1 of current year
 ```
 
-### Locale and Timezone
+### Comparing Moments
+
+Check if one date is before another:
 
 ```js
-moment.locale('fr');
-console.log(moment().format('LLLL'));  // French localized format
+const date1 = moment("2023-01-01");
+const date2 = moment("2024-01-01");
+console.log(date1.isBefore(date2)); // true
+```
 
-// Timezone support is available via moment-timezone add-on
+Check if two moments are the same day:
+
+```js
+const date1 = moment("2024-06-01");
+const date2 = moment("2024-06-01T10:00");
+console.log(date1.isSame(date2, "day")); // true
+```
+
+### Duration and Humanize
+
+Create a duration of 2 hours and 15 minutes:
+
+```js
+const duration = moment.duration({ hours: 2, minutes: 15 });
+console.log(duration.humanize()); // "2 hours"
+```
+
+Get difference between two moments:
+
+```js
+const start = moment("2024-06-01 08:00");
+const end = moment("2024-06-01 10:30");
+const diff = moment.duration(end.diff(start));
+console.log(diff.asMinutes()); // 150
 ```
 
 ---
 
 ## API Reference
 
-### Main Functions and Methods
+### `moment(input, format, strict)`
 
-#### `moment([input], [format], [strict], [locale])`
+Creates a Moment object.
 
-Creates a Moment object representing a date/time.
+- `input` (string|Date|Moment|number|array): The date/time input.
+- `format` (string|string[], optional): Format(s) to parse the input.
+- `strict` (boolean, optional): Whether to use strict parsing.
 
-- **Parameters:**
-  - `input` (string | number | Date | Moment): Date/time value to parse. Optional, defaults to current time.
-  - `format` (string | string[]): Parsing format(s) to interpret input string.
-  - `strict` (boolean): Enable strict parsing (optional).
-  - `locale` (string): Locale to use for this moment instance.
-
-- **Returns:** Moment object.
+Returns a Moment instance representing the parsed date/time.
 
 ---
 
-#### Instance Methods
+### `moment().format(formatString)`
 
-- `format(String) → String`  
-Formats the moment to a string using tokens, e.g., `"YYYY-MM-DD"`, `"dddd, MMMM Do"`.
+Formats the Moment to a string.
 
-- `add(Number, String) → Moment`  
-Adds time to the moment (e.g., `add(7, 'days')`).
+- `formatString` (string, optional): Formatting tokens (e.g., `"YYYY-MM-DD"`, `"MMMM Do, YYYY"`).
 
-- `subtract(Number, String) → Moment`  
+Returns a formatted string representing the date/time.
+
+---
+
+### `moment().add(amount, unit)`
+
+Adds time to the moment.
+
+- `amount` (number): Amount of time units to add.
+- `unit` (string): Unit of time (`'days'`, `'months'`, `'years'`, `'hours'`, `'minutes'`, `'seconds'`, etc).
+
+Returns the modified Moment.
+
+---
+
+### `moment().subtract(amount, unit)`
+
 Subtracts time from the moment.
 
-- `startOf(String) → Moment`  
-Sets to the start of a unit of time (e.g., `"year"`, `"month"`, `"day"`).
+- Parameters identical to `.add()`.
 
-- `endOf(String) → Moment`  
-Sets to the end of a unit of time.
-
-- `diff(Moment | String | Number, String, Boolean) → Number`  
-Calculates difference between moments in given units.
-
-- `from(Moment | String | Number, Boolean) → String`  
-Returns relative time from another moment or date.
-
-- `fromNow(Boolean) → String`  
-Returns relative time from now.
-
-- `locale(String) → Moment`  
-Sets or gets the locale.
+Returns the modified Moment.
 
 ---
 
-#### Static Methods
+### `moment().isBefore(momentInput, unit)`
 
-- `moment.utc([input], [format], [strict])`  
-Creates a moment in Coordinated Universal Time (UTC).
+Checks if the current moment is before another.
 
-- `moment.unix(Number)`  
-Create moment from Unix timestamp in seconds.
+- `momentInput` (Moment|Date|string): The moment to compare with.
+- `unit` (string, optional): Granularity (e.g., `'day'`, `'month'`).
 
-- `moment.duration(Number | Object, String)`  
-Creates a duration object representing a length of time.
+Returns boolean.
 
 ---
 
-## Contributing
+### `moment().isSame(momentInput, unit)`
 
-Moment.js is open-source and welcomes contributions to fix bugs, improve performance, or add features.
+Checks if the current moment is same as another.
 
-### How to contribute
+- Parameters identical to `.isBefore()`.
 
-1. Fork the repository on GitHub.
-2. Create a new branch for your work.
-3. Write clear, tested code.
-4. Submit a pull request with detailed description.
-5. Participate in code review and discussions.
+Returns boolean.
 
-Refer to the [CONTRIBUTING.md](https://github.com/moment/moment/blob/develop/CONTRIBUTING.md) in the repository for more details.
+---
+
+### `moment.duration(input, unit)`
+
+Creates a Duration object representing a span of time.
+
+- `input` (number|object|string): Number with unit or object with time properties.
+- `unit` (string, optional): Unit for number input.
+
+Returns a Duration instance.
+
+---
+
+### Common Duration Methods
+
+- `.humanize()`: Converts duration to human-readable string.
+- `.asMilliseconds()`, `.asSeconds()`, `.asMinutes()`, `.asHours()`, `.asDays()`: Converts duration into specified units.
+
+---
+
+### Localization
+
+- `moment.locale(localeName)`: Sets the locale globally.
+- `moment().locale(localeName)`: Sets the locale for a single Moment.
 
 ---
 
 ## License
 
-Moment.js is licensed under the MIT License. See the [LICENSE](https://github.com/moment/moment/blob/develop/LICENSE) file for details.
-
----
-
-## Contact
-
-- Project repository: [https://github.com/moment/moment](https://github.com/moment/moment)
-- Website: [https://momentjs.com/](https://momentjs.com/)
-- Issue tracker: [https://github.com/moment/moment/issues](https://github.com/moment/moment/issues)
-
+Moment.js is licensed under the MIT License. For full details, see the [LICENSE](https://github.com/moment/moment/blob/develop/LICENSE) file.

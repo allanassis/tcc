@@ -1,162 +1,151 @@
-# uri
+# lil-uri
 
 ## Overview
 
-The `uri` package is a compact and efficient JavaScript library designed for parsing, manipulating, and formatting URIs (Uniform Resource Identifiers). It provides developers with tools to easily handle web addresses by breaking them down into their constituent parts such as scheme, host, path, query parameters, and fragment identifiers.
+`lil-uri` is a minimalistic and efficient JavaScript library focused on parsing and manipulating URI (Uniform Resource Identifier) strings. It models the domain concepts of URIs as defined by RFC 3986, including components such as scheme, authority, path, query, and fragment. The library provides lightweight tools to decompose, modify, and recompose URIs, enabling developers to work with URLs and URIs conveniently in web or server-side JavaScript environments.
 
 ### Domain Concepts
 
-- **URI (Uniform Resource Identifier):** A string of characters used to identify a resource on the internet, commonly known as URLs but more general.
-- **Parsing:** Breaking down a URI string into meaningful components such as scheme, authority, path, query, and fragment.
-- **Formatting:** Constructing a URI string back from its components.
-- **Query Parameter Handling:** Reading and modifying key-value pairs passed as part of the URI after the `?`.
-
-Understanding these domain concepts is essential to effectively manipulate URIs within web applications, API clients, or any context where resource addressing and navigation are involved.
+- **URI Components:** The basic parts of a URI including scheme (protocol), host, port, path, query parameters, and fragment.
+- **Parsing:** Transforming a URI string into an object representation for programmatic access.
+- **Serialization:** Converting the URI object back into a valid URI string.
+- **Manipulation:** Modifying individual parts of the URI such as changing the query parameters or path.
+- **Normalization:** Handling encoding and decoding of URI components to ensure compliance and interoperability.
 
 ---
 
 ## Installation
 
-To include `uri` in your JavaScript or Node.js project, you can install it using npm:
+You can install `lil-uri` via npm:
 
 ```bash
-npm install @lil-js/uri
+npm install lil-uri
 ```
 
-or using yarn:
+Alternatively, use yarn:
 
 ```bash
-yarn add @lil-js/uri
+yarn add lil-uri
 ```
 
-This package is compatible with modern JavaScript environments including Node.js and frontend bundlers.
+The library is designed for usage in Node.js or browser environments supporting ES modules.
 
 ---
 
 ## Usage and Examples
 
-Below are common usage patterns explaining how to parse, modify, and serialize URIs using the `uri` package.
-
-### Parsing a URI
-
-Parse a URI string into its components:
+### Basic Parsing and Serialization
 
 ```js
-import { Uri } from "@lil-js/uri";
+import uri from "lil-uri";
 
-const myUri = Uri.parse(
-  "https://example.com:8080/path/to/resource?foo=bar&baz=qux#section",
-);
+const url =
+  "https://user:pass@example.com:8080/path/to/file?search=foo#section1";
 
-console.log(myUri.scheme); // 'https'
-console.log(myUri.host); // 'example.com'
-console.log(myUri.port); // '8080'
-console.log(myUri.path); // '/path/to/resource'
-console.log(myUri.queryParams); // { foo: 'bar', baz: 'qux' }
-console.log(myUri.fragment); // 'section'
+// Parse the URI string into an object
+const parsed = uri(url);
+
+console.log(parsed);
+// Output:
+// {
+//   scheme: 'https',
+//   userinfo: 'user:pass',
+//   host: 'example.com',
+//   port: '8080',
+//   path: '/path/to/file',
+//   search: 'search=foo',
+//   hash: 'section1'
+// }
+
+// Modify components
+parsed.path = "/new/path";
+parsed.search = "search=bar";
+
+// Serialize back to string
+const newUrl = parsed.toString();
+console.log(newUrl);
+// Output: https://user:pass@example.com:8080/new/path?search=bar#section1
 ```
 
-### Modifying Query Parameters
-
-You can manipulate query parameters via an object interface:
+### Accessing Query Parameters
 
 ```js
-const myUri = Uri.parse("https://example.com?foo=bar");
+import uri from "lil-uri";
 
-myUri.queryParams.baz = "qux";
-myUri.queryParams.foo = "updated";
+const url = "https://example.com/page?foo=1&bar=2";
+const u = uri(url);
 
-console.log(myUri.toString());
-// Outputs: 'https://example.com?foo=updated&baz=qux'
+// Get the value of 'foo'
+const fooValue = u.query.get("foo"); // '1'
+
+// Set a new query parameter
+u.query.set("baz", "3");
+
+// Convert to string
+console.log(u.toString());
+// Output: https://example.com/page?foo=1&bar=2&baz=3
 ```
 
-### Constructing a New URI
-
-Create a new URI from components:
+### Creating a URI from Components
 
 ```js
-const newUri = new Uri({
-  scheme: "https",
-  host: "api.example.com",
-  path: "/v1/users",
-  queryParams: { page: "1", sort: "name" },
-});
+import uri from "lil-uri";
 
-console.log(newUri.toString());
-// Outputs: 'https://api.example.com/v1/users?page=1&sort=name'
+const u = uri();
+
+u.scheme = "http";
+u.host = "example.org";
+u.path = "/index.html";
+u.query.set("id", "123");
+
+console.log(u.toString());
+// Output: http://example.org/index.html?id=123
 ```
 
 ---
 
 ## API Reference
 
-### `Uri`
+### `uri(input?: string | URI): URI`
 
-The main class representing a URI and its components.
-
-#### Constructor
-
-```ts
-new Uri(options: {
-  scheme?: string,
-  host?: string,
-  port?: string | number,
-  path?: string,
-  queryParams?: Record<string, string>,
-  fragment?: string,
-})
-```
-
+- **Purpose:** Parses a URI string into a URI object or clones an existing URI object. If no argument is provided, returns an empty URI.
 - **Parameters:**
-  - `scheme` (string, optional): The scheme/protocol of the URI like `http`, `https`.
-  - `host` (string, optional): The hostname or IP address.
-  - `port` (string | number, optional): The port number.
-  - `path` (string, optional): The path component of the URI.
-  - `queryParams` (object, optional): Key-value pairs representing query parameters.
-  - `fragment` (string, optional): The fragment identifier after `#`.
-
-#### Properties
-
-- `scheme: string | undefined` - URI scheme.
-- `host: string | undefined` - URI host.
-- `port: string | number | undefined` - Port number.
-- `path: string | undefined` - Path after the host.
-- `queryParams: Record<string, string>` - Query parameters as an object.
-- `fragment: string | undefined` - Fragment identifier.
-
-#### Methods
-
-- `static parse(uriString: string): Uri`  
-  Parses a URI string and returns a `Uri` instance with all parts extracted.
-
-- `toString(): string`  
-  Returns the full URI string constructed from the instance components.
+  - `input` (optional): A URI string to parse or a URI object to clone.
+- **Returns:** A `URI` object representing the parsed URI components.
 
 ---
 
-## Contributing
+### URI Object Properties
 
-Contributions are welcome to improve URI parsing accuracy, support additional URI components, or enhance API usability.
+- `scheme` (string): The URI scheme or protocol (e.g., `'http'`, `'https'`).
+- `userinfo` (string | undefined): User information (e.g., `'user:pass'`).
+- `host` (string | undefined): The hostname or IP address.
+- `port` (string | undefined): The network port as a string.
+- `path` (string): The path component (e.g., `'/path/to/resource'`).
+- `search` (string): The query string portion including key-value pairs.
+- `hash` (string): The fragment identifier after `#`.
 
-How to contribute:
+---
 
-1. Fork the repository on GitHub.
-2. Create a new feature or bugfix branch.
-3. Write clean, well-documented code.
-4. Ensure tests cover your changes.
-5. Submit a pull request with a clear description of your modifications.
+### URI Object Methods
 
-Refer to the contributor guidelines in the repository for detailed instructions.
+- `toString(): string`
+
+  Serializes the URI object back into a URI string that can be used in browsers or HTTP requests.
+
+- `query` (Map-like interface)
+
+  An object implementing Map-like methods to access and modify query parameters:
+  - `get(key: string): string | undefined` — Retrieve the value of a query parameter.
+  - `set(key: string, value: string): void` — Set the value for a query parameter.
+  - `delete(key: string): void` — Remove a query parameter.
+  - `has(key: string): boolean` — Check if a query parameter exists.
+  - `keys(): IterableIterator<string>` — Iterate over query parameter keys.
+  - `values(): IterableIterator<string>` — Iterate over query parameter values.
+  - `entries(): IterableIterator<[string, string]>` — Iterate over key-value pairs.
 
 ---
 
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](https://github.com/lil-js/uri/blob/main/LICENSE) file for details.
-
----
-
-## Contact
-
-- **Repository:** [https://github.com/lil-js/uri](https://github.com/lil-js/uri)
-- For issues and pull requests, please use the GitHub Issues page in the repository.

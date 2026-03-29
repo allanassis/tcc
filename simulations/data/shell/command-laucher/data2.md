@@ -1,148 +1,122 @@
-# Command Launcher
+# command-launcher
 
 ## Overview
 
-Command Launcher is a Python utility designed to facilitate executing shell commands asynchronously with easy management and improved workflow integration. It focuses on providing a simple yet powerful abstraction for launching commands, handling outputs, and monitoring execution results. The tool particularly benefits developers and system administrators who automate shell tasks or scripts within Python environments.
+`command-launcher` is a lightweight Python library designed to simplify running shell commands from within Python scripts. It provides a clean, Pythonic interface for executing external commands and capturing their output, status, and errors. This tool is especially useful for scripting automation, workflow orchestration, or any scenario where interaction with the system shell is required.
 
 ### Domain Concepts
 
-- **Command Execution:** Running system shell commands or scripts programmatically.
-- **Async Process Handling:** Managing asynchronous operations and retrieving outputs without blocking.
-- **Output and Error Management:** Capturing command stdout and stderr for logging and processing.
-- **Command Monitoring:** Tracking the state and result of executed commands.
+- **Command Execution:** Running shell commands or external programs from Python.
+- **Process Management:** Starting and handling subprocesses with control over input/output.
+- **Result Handling:** Capturing the standard output (stdout), standard error (stderr), and exit status of commands.
+- **Timeouts:** Ability to limit the execution time of the commands.
+
+These core concepts allow the user to integrate shell command functionality seamlessly into Python applications, encouraging robust error handling and output processing.
 
 ---
 
 ## Installation
 
-You can install Command Launcher via pip:
+To install the `command-launcher` package, you can use `pip`:
 
 ```bash
 pip install command-launcher
 ```
 
-Alternatively, clone the repository and install dependencies manually:
-
-```bash
-git clone https://github.com/xZepyx/command-launcher.git
-cd command-launcher
-pip install -r requirements.txt
-```
-
-The package requires Python 3.6 or newer.
+Make sure you have Python 3.6 or later installed.
 
 ---
 
 ## Usage and Examples
 
-### Basic Usage
+### Basic Usage Example
 
-Use Command Launcher to execute a shell command asynchronously and retrieve its output.
-
-```python
-from command_launcher import Command
-
-# Create a Command instance with the shell command.
-cmd = Command("ls -la")
-
-# Run the command asynchronously.
-cmd.run()
-
-# Wait for completion and get the output.
-output = cmd.get_output()
-print("Command output:", output)
-```
-
-### Advanced Usage: Running Multiple Commands
-
-You can launch multiple commands and monitor their execution status individually.
+To run a simple shell command and get its output:
 
 ```python
-from command_launcher import Command
-import time
+from command_launcher import CommandLauncher
 
-cmd1 = Command("echo 'Hello World'")
-cmd2 = Command("sleep 2 && echo 'Done sleeping'")
+# Initialize the launcher
+launcher = CommandLauncher()
 
-cmd1.run()
-cmd2.run()
+# Run a command
+result = launcher.run("echo Hello, World!")
 
-# Poll commands for completion
-while not cmd1.is_finished() or not cmd2.is_finished():
-    print("Waiting for commands to finish...")
-    time.sleep(1)
-
-print("Cmd1 output:", cmd1.get_output())
-print("Cmd2 output:", cmd2.get_output())
+# Access the output
+print("Standard Output:", result.stdout)
+print("Standard Error:", result.stderr)
+print("Exit Code:", result.exit_code)
 ```
+
+**Expected output:**
+
+```
+Standard Output: Hello, World!
+
+Standard Error:
+Exit Code: 0
+```
+
+### Example: Running a Command with a Timeout
+
+```python
+result = launcher.run("sleep 5", timeout=2)
+if result.timed_out:
+    print("The command timed out.")
+else:
+    print("Command completed successfully.")
+```
+
+This example demonstrates how to run a command with a timeout, handling cases where the command takes too long.
+
+### Example: Running Commands with Input Data
+
+```python
+result = launcher.run("cat", input_data="Hello from stdin\n")
+print(result.stdout)
+```
+
+This pipes the string `"Hello from stdin\n"` to the command's standard input.
 
 ---
 
 ## API Reference
 
-### `Command(command_string, shell=True)`
+### `CommandLauncher` class
 
-Creates a new Command instance.
+The main class to execute shell commands.
 
-- **Parameters:**
-  - `command_string` (str): The shell command to execute.
-  - `shell` (bool, optional): Use shell execution; default is `True`.
+#### Methods
 
-### Methods
+- `run(command: str, timeout: Optional[int] = None, input_data: Optional[str] = None) -> CommandResult`
 
-- `run()`
+Executes a shell command.
 
-  Launches the command asynchronously. Non-blocking call.
+**Parameters:**
 
-- `get_output() -> str`
+- `command` (str): The shell command to execute.
+- `timeout` (int, optional): Number of seconds to wait before timing out the command.
+- `input_data` (str, optional): Data to send to the standard input of the command.
 
-  Returns the standard output produced by the command after completion.
+**Returns:**
 
-- `get_error() -> str`
-
-  Returns the standard error output from the command.
-
-- `is_finished() -> bool`
-
-  Checks if the command execution has finished.
-
-- `wait(timeout=None)`
-
-  Blocks until the command finishes or until an optional timeout (in seconds).
-
-- `terminate()`
-
-  Sends a termination signal to the running command.
-
-### Execution Facts
-
-- The command runs asynchronously once `run()` is called.
-- Calling `get_output()` or `get_error()` before completion may yield partial or empty results.
-- Use `is_finished()` or `wait()` to synchronize before accessing outputs.
-- `terminate()` can interrupt the running command but may not guarantee immediate stop depending on the underlying OS.
+- `CommandResult`: An object containing execution results.
 
 ---
 
-## Contributing
+### `CommandResult` class
 
-Contributions, bug reports, and feature requests are welcome. To contribute:
+Represents the outcome of a command executed by `CommandLauncher`.
 
-1. Fork the repository.
-2. Create a feature branch.
-3. Commit your changes with clear message.
-4. Submit a pull request.
+#### Attributes
 
-Please ensure your code adheres to existing style and includes tests where applicable.
+- `stdout` (str): Standard output captured from the command.
+- `stderr` (str): Standard error output captured.
+- `exit_code` (int): The exit status code returned by the command.
+- `timed_out` (bool): Indicates whether the command was terminated due to timeout.
 
 ---
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file in the repository for details.
-
----
-
-## Contact
-
-- GitHub Repository: [https://github.com/xZepyx/command-launcher](https://github.com/xZepyx/command-launcher)
-- Issues and feature requests via GitHub Issues page.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/xZepyx/command-launcher/blob/master/LICENSE) file for details.

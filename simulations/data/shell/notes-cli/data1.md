@@ -2,137 +2,173 @@
 
 ## Overview
 
-`notes-cli` is a command-line tool designed to help users take, manage, and search notes efficiently from their terminal. It simplifies note-taking by allowing notes to be stored in plain text files and supports quick search and retrieval using fuzzy search features. The tool focuses on lightweight, keyboard-driven workflows catered toward developers, writers, and users who prefer terminal-based note management.
+`notes-cli` is a fast and lightweight command-line note-taking tool designed to help users quickly create, manage, and search plain text notes. It emphasizes simplicity, speed, and efficiency on the terminal, enabling seamless note management without the overhead of graphical interfaces or complex databases.
 
 ### Domain Concepts
 
-- **Notes and Note Files:** `notes-cli` treats individual notes as text files stored in a specified directory, each representing a separate note.
-- **Tagging and Searching:** Users can tag notes via hashtags in the content and perform content-based or tag-based searches.
-- **TUI (Text User Interface):** It provides a terminal-based interactive interface for browsing, creating, editing, and searching notes.
-- **Fuzzy Search:** Implements fuzzy search algorithms to quickly filter notes matching search queries.
-- **Integration with Editors:** Supports launching notes in external editors configured by the user.
+- **Notes**: Plain text files representing pieces of information or thoughts, typically stored in a directory structure.
+- **Tags**: Keywords or labels attached to notes to categorize and retrieve them easily.
+- **Indexing**: Creating an efficient search index over notes for rapid text and tag-based querying.
+- **Commands**: The CLI interface exposes commands for creating, listing, searching, and organizing notes.
+- **Editor Integration**: Uses the user's environment editor (e.g., `vim`, `nano`) for editing notes.
+- **Note Directory**: A designated folder containing all note files.
 
-The tool models the domain concepts of note-taking, text search, and terminal interactions to streamline personal knowledge management in a developer-friendly environment.
+`notes-cli` aims to improve productivity by offering an intuitive CLI experience that integrates smoothly into terminal workflows.
 
 ---
 
 ## Installation
 
-`notes-cli` can be installed on Unix-like systems and requires Go and typical command line tools.
+### Prerequisites
 
-### Using Go
+- Go (version 1.12+ for building from source)
+- A Unix-like OS (Linux, macOS); Windows might require WSL or similar.
 
-If you have Go installed, you can install `notes-cli` using:
+### Install via release binaries
+
+Download the latest binary from the [GitHub releases](https://github.com/rhysd/notes-cli/releases) page for your platform, and add it to your system's PATH.
+
+### Build from source (requires Go)
 
 ```bash
-go install github.com/rhysd/notes-cli@latest
+git clone https://github.com/rhysd/notes-cli.git
+cd notes-cli
+go build
 ```
 
-Make sure your Go bin directory is in your PATH to run the command directly.
+Move the output binary to a directory in your PATH:
 
-### Using Prebuilt Binaries
-
-Check the [GitHub Releases](https://github.com/rhysd/notes-cli/releases) page for precompiled binaries for various OS and architectures. Download the appropriate binary for your platform, make it executable, and place it in your PATH.
-
-### Dependencies
-
-- A modern Unix-like environment (Linux, macOS).
-- Optional: A configured text editor like `vim`, `nano`, or others for note editing.
+```bash
+mv notes-cli /usr/local/bin/
+```
 
 ---
 
 ## Usage and Examples
 
-### Basic Usage
+`notes-cli` operates primarily through subcommands. Below are typical usage patterns.
 
-Initialize your notes directory (environment variable or config):
+### Setting the Notes Directory
 
-```bash
-export NOTES_DIR="$HOME/notes"
-mkdir -p $NOTES_DIR
-```
-
-Start `notes-cli`:
+By default, `notes-cli` uses a directory called `~/notes`. You can change this by setting the environment variable `NOTES_DIR`:
 
 ```bash
-notes
+export NOTES_DIR=~/my_notes
 ```
 
-This opens an interactive terminal UI listing your notes.
+### Create a new note
 
-### Creating a New Note
-
-In the interface, press `n` to create a new note. Enter the title, and the note file will be created.
-
-Alternatively, create notes by adding files to the `NOTES_DIR`.
-
-### Searching Notes
-
-Type `/` followed by your search query to filter notes using fuzzy search matching titles and contents.
-
-### Editing a Note
-
-Select a note and press `e` to open it in the configured editor.
-
-### Command-line Options
+Create (or edit) a note:
 
 ```bash
-notes -h
+notes new "My first note"
 ```
 
-Shows help and available flags:
+This opens your default editor to enter the note content. The title is taken from the argument.
 
-- `-dir string` : Specify notes directory (default uses `NOTES_DIR` env var).
-- `-editor string` : Specify what editor to open notes in (default depends on `$EDITOR` env).
-- `-version` : Show version information.
+### List all notes
 
-### Example: Run notes in custom directory with Vim editor
+List all notes with titles and creation dates:
 
 ```bash
-notes -dir $HOME/my_notes -editor vim
+notes list
 ```
+
+### Search notes
+
+Search by text across all notes:
+
+```bash
+notes search "meeting notes"
+```
+
+Search using tags:
+
+```bash
+notes search "#todo"
+```
+
+### Open an existing note
+
+Open a note by specifying its name:
+
+```bash
+notes open "My first note"
+```
+
+### Tagging and Reference
+
+Notes can be tagged inline with `#tagname` inside their content. These tags are indexed for faster searching.
+
+### Indexing notes
+
+Create or update the search index for faster queries:
+
+```bash
+notes index
+```
+
+This operation is usually done automatically but running manually ensures up-to-date search results.
 
 ---
 
-## API Reference
+## API Reference (CLI Commands)
 
-Since `notes-cli` is a CLI application, it exposes a limited programmatic API primarily through command-line flags and terminal keyboard shortcuts.
+### `notes new <title>`
 
-### CLI Flags
+Creates a new note with the specified title. Opens a text editor to compose the content.
 
-- `-dir string`
+- Parameters:
+  - `<title>`: The title of the new note (string).
+- Behavior:
+  - Opens the editor defined by the environment variable `EDITOR` or defaults to `vim`.
+  - Saves the note file to the notes directory under a sanitized filename derived from the title.
 
-  Notes directory location. Defaults to environment variable `NOTES_DIR` or current directory.
+### `notes list`
 
-- `-editor string`
+Lists all notes in the configured notes directory.
 
-  External editor command to open notes (e.g., `vim`, `nano`, `code`).
+- Output:
+  - Displays note titles with metadata such as creation and modification timestamps.
 
-- `-version`
+### `notes search <query>`
 
-  Prints version information and exits.
+Searches notes for the specified textual query or tag.
 
-### Keyboard Shortcuts (when running interactively)
+- Parameters:
+  - `<query>`: Text to search for in note contents; prefix with `#` to search tags.
+- Returns:
+  - List of notes matching the query sorted by relevance or recency.
 
-- `n`: Create a new note.
-- `/`: Start incremental search for filtering notes.
-- Arrow keys: Navigate note list.
-- `e`: Edit selected note.
-- `d`: Delete selected note.
-- `q`: Quit the program.
+### `notes open <title>`
+
+Opens an existing note with the given title in the text editor.
+
+- Parameters:
+  - `<title>`: Title of the note to open.
+
+### `notes index`
+
+Updates the search index of all note contents and tags.
+
+- Purpose:
+  - Accelerates `search` queries by precomputing an index.
+  - Indexing happens automatically on note creation or editing but can be run manually.
+
+### Environment Variables
+
+- `NOTES_DIR`: Path to the notes directory (default: `~/notes`).
+- `EDITOR`: Text editor to open notes (default: `vim`).
 
 ---
 
-## Contributing
+## Best Practices
 
-Contributions to `notes-cli` are welcome! To contribute:
-
-1. Fork the repository on GitHub.
-2. Create a feature branch for your changes: `git checkout -b feature-name`.
-3. Make changes with tests or documentation updates as needed.
-4. Submit a pull request with a description of your changes.
-
-Please check existing issues and the contribution guidelines on the repository. Engage in discussions to propose new features or report bugs.
+- Use meaningful titles for notes to improve file organization.
+- Add tags within notes to enable effective categorization and retrieval.
+- Regularly run `notes index` if you manipulate notes outside `notes-cli`.
+- Use a familiar terminal editor for quick editing and integration.
+- Backup your notes directory regularly to prevent data loss.
 
 ---
 
@@ -142,8 +178,4 @@ Please check existing issues and the contribution guidelines on the repository. 
 
 ---
 
-## Contact
-
-- **Repository:** https://github.com/rhysd/notes-cli
-- **Issues:** Use GitHub Issues page for bug reports and feature requests.
-- **Author:** Rhysd
+For further details and advanced usage, visit the [GitHub repository](https://github.com/rhysd/notes-cli).

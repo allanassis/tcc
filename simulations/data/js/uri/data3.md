@@ -2,168 +2,166 @@
 
 ## Overview
 
-`lil-uri` is a minimalist and fast JavaScript library for parsing, manipulating, and formatting URIs (Uniform Resource Identifiers) in compliance with the URL standard. It focuses on providing a lightweight implementation that easily integrates into projects requiring URI manipulation without the overhead of larger libraries.
+`lil-uri` is a minimalistic JavaScript library designed to provide a simple and efficient API for parsing, constructing, and manipulating URI (Uniform Resource Identifier) components. The library models core domain concepts surrounding URIs, including schemes, hosts, ports, paths, query parameters, fragments, and authentication. It offers utilities to decompose URIs into meaningful parts and reassemble them, facilitating easy handling of URIs in web development and networking tasks.
 
 ### Domain Concepts
 
-- **URI Components:** The tool models the fundamental parts of a URI including scheme, hostname, port, pathname, search parameters (query), and fragment.
-- **URL Parsing:** The extraction and representation of these components from a URI string.
-- **URI Manipulation:** The ability to modify these components individually and serialize them back into a complete URI string.
-- **Standards Compliance:** Behavior aligned with the WHATWG URL Standard, making it suitable for web-related applications.
+- **URI Components:** The standardized parts of a URI according to RFC 3986, such as scheme, authority, path, query, and fragment.
+- **Parsing:** Extracting individual components from URI strings.
+- **Formatting:** Reconstructing URI strings from component parts.
+- **Relative URI Resolution:** Combining base URIs with relative references.
+- **Query Handling:** Parsing and serializing query parameters as key-value pairs.
+- **Encoding & Decoding:** Properly encoding reserved characters to maintain URI validity.
 
-The library aims to help developers handle URIs reliably, ensuring consistent parsing and formatting suitable for browsers, Node.js, or other JavaScript environments.
+`lil-uri` helps users by abstracting the complexity of URI syntax and provides a lightweight API to interact with the components programmatically.
 
 ---
 
 ## Installation
 
-To install `lil-uri` using npm, run:
+You can install `lil-uri` via npm:
 
 ```bash
-npm install lil-uri
+npm install @lil-js/uri
 ```
 
-Or if you use yarn:
-
-```bash
-yarn add lil-uri
-```
-
-This package works in Node.js and modern browsers supporting ES modules.
+The package supports modern JavaScript environments including Node.js and web browsers via bundlers.
 
 ---
 
 ## Usage and Examples
 
-### Basic Usage
-
-Import the `URI` class and create an instance by passing a URI string:
+### Parsing a URI
 
 ```js
-import { URI } from "lil-uri";
+import { parse } from "@lil-js/uri";
 
-const url = new URI("https://example.com:8080/path/to/page?name=test#info");
+const url = "https://user:pass@example.com:8080/path?query=123#hash";
 
-console.log(url.scheme); // "https"
-console.log(url.hostname); // "example.com"
-console.log(url.port); // "8080"
-console.log(url.pathname); // "/path/to/page"
-console.log(url.search); // "?name=test"
-console.log(url.hash); // "#info"
+const parsed = parse(url);
+
+console.log(parsed);
+/* Output:
+{
+  scheme: 'https',
+  userinfo: 'user:pass',
+  host: 'example.com',
+  port: '8080',
+  path: '/path',
+  query: 'query=123',
+  fragment: 'hash'
+}
+*/
 ```
 
-### Manipulate URI Components
-
-You can modify parts of the URI and serialize the result:
+### Formatting a URI
 
 ```js
-url.pathname = "/new/path";
-url.search = "?name=updated";
-url.hash = "#details";
+import { format } from "@lil-js/uri";
 
-console.log(url.toString());
-// Output: "https://example.com:8080/new/path?name=updated#details"
+const components = {
+  scheme: "https",
+  userinfo: "user:pass",
+  host: "example.com",
+  port: "8080",
+  path: "/path",
+  query: "query=123",
+  fragment: "hash",
+};
+
+const uriString = format(components);
+console.log(uriString);
+// Output: "https://user:pass@example.com:8080/path?query=123#hash"
 ```
 
-### Create a URI from Components
-
-You can instantiate and build a URI using individual pieces:
+### Resolving a Relative URI
 
 ```js
-const anotherUrl = new URI();
-anotherUrl.scheme = "http";
-anotherUrl.hostname = "mysite.com";
-anotherUrl.pathname = "/home";
+import { resolve } from "@lil-js/uri";
 
-console.log(anotherUrl.toString());
-// Output: "http://mysite.com/home"
+const base = "https://example.com/dir/page.html";
+const relative = "../image.png";
+
+const resolved = resolve(base, relative);
+console.log(resolved);
+// Output: "https://example.com/image.png"
+```
+
+### Working with Query Parameters
+
+```js
+import { parseQuery, formatQuery } from "@lil-js/uri";
+
+const queryString = "name=alice&age=30";
+
+const queryObj = parseQuery(queryString);
+console.log(queryObj);
+// Output: { name: 'alice', age: '30' }
+
+const newQuery = formatQuery({ search: "js", page: 1 });
+console.log(newQuery);
+// Output: "search=js&page=1"
 ```
 
 ---
 
 ## API Reference
 
-### `class URI`
+### `parse(uri: string): UriComponents`
 
-The core class representing a parsed URI, allowing access and modification of its components.
+Parses a URI string into its component parts.
 
-#### Constructor
+- **Parameters:**
+  - `uri` (string): The URI string to parse.
 
-- `new URI(uriString?: string)`
+- **Returns:** An object with the following properties (strings or undefined if not present):
+  - `scheme` — The URI scheme, e.g., `"http"`.
+  - `userinfo` — User information like username and password.
+  - `host` — Domain or IP address.
+  - `port` — Port number as a string.
+  - `path` — The path component.
+  - `query` — Raw query string after `?`.
+  - `fragment` — The fragment identifier after `#`.
 
-Constructs a new `URI` instance. If a URI string is provided, it parses and populates the components. If omitted, starts with an empty URI.
+### `format(components: UriComponents): string`
 
-#### Properties
+Constructs a URI string from the given components.
 
-- `scheme: string`  
-  The URI scheme/protocol (e.g., `http`, `https`, `ftp`).
+- **Parameters:**
+  - `components` (object): URI components, matching those from the `parse` output.
 
-- `username: string`  
-  The username portion of the authority, if any.
+- **Returns:** URI string assembled from parts.
 
-- `password: string`  
-  The password portion of the authority, if any.
+### `resolve(base: string, relative: string): string`
 
-- `hostname: string`  
-  The domain or IP address.
+Resolves a relative URI against a base URI according to the standard URI resolution algorithm.
 
-- `port: string`  
-  The port number as a string (empty string if not specified).
+- **Parameters:**
+  - `base` (string): The base URI.
+  - `relative` (string): The relative URI to resolve against the base.
 
-- `pathname: string`  
-  The path component (starting with `/`).
+- **Returns:** An absolute URI string.
 
-- `search: string`  
-  The query string including leading `?` (empty string if none).
+### `parseQuery(query: string): Record<string, string>`
 
-- `hash: string`  
-  The fragment identifier including `#` (empty string if none).
+Parses a query string into an object of key-value pairs.
 
-#### Methods
+- **Parameters:**
+  - `query` (string): The raw query string (without leading `?`).
 
-- `toString(): string`
+- **Returns:** An object mapping query parameter names to values.
 
-Returns the full URI string serialized from the current components.
+### `formatQuery(params: Record<string, string>): string`
 
-- `toJSON(): string`
+Serializes an object into a URL-encoded query string.
 
-Returns the URI string, similar to `toString()`, useful for JSON serialization.
+- **Parameters:**
+  - `params` (object): Key-value pairs representing query parameters.
 
-#### Example
-
-```js
-const uri = new URI("https://user:pass@example.com:8080/path?query=1#frag");
-uri.password = "newpass";
-console.log(uri.toString());
-// "https://user:newpass@example.com:8080/path?query=1#frag"
-```
-
----
-
-## Contributing
-
-Contributions to `lil-uri` are welcome! To contribute:
-
-1. Fork the repository on GitHub.
-2. Create a topic branch (`git checkout -b feature/your-feature`).
-3. Make your changes with clear, concise commit messages.
-4. Test your changes to ensure robustness.
-5. Open a pull request against the `main` branch describing your changes.
-
-Please follow the existing code style and include tests for new features or bug fixes.
+- **Returns:** URL-encoded query string.
 
 ---
 
 ## License
 
-`lil-uri` is distributed under the MIT License. See the LICENSE file in the repository for details.
-
----
-
-## Contact
-
-- **Repository:** [https://github.com/lil-js/uri](https://github.com/lil-js/uri)
-- **Issues and feature requests:** Use GitHub issues in the repository.
-- **Author:** Maintained by the lil-js team.
-
-For inquiries, please open issues or pull requests on GitHub.
+`lil-uri` is licensed under the MIT License. See the [LICENSE](https://github.com/lil-js/uri/blob/main/LICENSE) file for details.

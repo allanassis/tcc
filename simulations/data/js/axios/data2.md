@@ -2,38 +2,35 @@
 
 ## Overview
 
-Axios is a promise-based HTTP client for the browser and Node.js. It provides a simple and elegant API to perform asynchronous HTTP requests using familiar JavaScript syntax with support for the Promise API, making it easier to interact with RESTful APIs and handle HTTP communications.
+Axios is a popular promise-based HTTP client for JavaScript, designed to work both in the browser and in Node.js environments. It provides an easy and flexible way to send asynchronous HTTP requests to REST endpoints and handle responses. Axios abstracts the complexity of XMLHttpRequest or Node's HTTP module and offers a clean API that supports request and response interception, automatic JSON data transformation, cancellation, and timeout handling.
 
 ### Domain Concepts
 
-- **HTTP Requests & Responses:** Axios models HTTP request methods (GET, POST, PUT, DELETE, PATCH, etc.) and responses as JavaScript Promise objects.
-- **Requests Configuration:** Axios uses configuration objects to specify request details such as URL, headers, method, data, and timeout.
-- **Interceptors:** Allows adding custom logic to requests or responses before they are handled, useful for logging, injecting authentication tokens, or globally handling errors.
-- **Cancellation:** Supports canceling requests using cancellation tokens.
-- **Error Handling:** Provides a structured way to handle network errors, timeouts, or response status errors.
-- **Request and Response Transformation:** Configuration allows intercepting and transforming data before sending the request or after receiving the response.
-
-Axios abstracts the complexity of XMLHttpRequest (XHR) in browsers and the http module in Node.js, presenting a unified and consistent API for HTTP interactions.
+- **HTTP Requests:** Axios models HTTP requests such as GET, POST, PUT, DELETE, PATCH, etc., to interact with web services.
+- **Promises:** Axios uses JavaScript Promises for asynchronous control flow, returning a promise that resolves with the HTTP response or rejects with an error.
+- **Interceptors:** Functions that allow transformation or logging of requests/responses before they are handled.
+- **Request Configurations:** Structured options describing how HTTP requests should be made, including headers, query params, timeouts, and more.
+- **Response Objects:** Structured data containing status, headers, and payload returned from an HTTP call.
+- **Cancellation:** Ability to abort requests mid-flight using Cancel tokens.
+- **Adapter:** Internal abstraction enabling Axios to work in different environments (browser or Node.js) with interchangeable HTTP implementations.
 
 ---
 
 ## Installation
 
-You can install Axios via npm or yarn.
-
-### Using npm
+Install Axios via npm or yarn:
 
 ```bash
 npm install axios
 ```
 
-### Using yarn
+or
 
 ```bash
 yarn add axios
 ```
 
-Axios supports modern browsers and Node.js environments.
+Axios is compatible with both browser and Node.js environments, with no additional setup required.
 
 ---
 
@@ -42,33 +39,42 @@ Axios supports modern browsers and Node.js environments.
 ### Basic GET Request
 
 ```js
-const axios = require("axios");
+const axios = require('axios');
 
-axios
-  .get("https://jsonplaceholder.typicode.com/posts/1")
-  .then((response) => {
+axios.get('https://api.example.com/data')
+  .then(response => {
     console.log(response.data);
   })
-  .catch((error) => {
-    console.error(error);
+  .catch(error => {
+    console.error('Error fetching data:', error);
   });
 ```
 
-### POST Request with Data
+### POST Request with JSON Payload
 
 ```js
-axios
-  .post("https://jsonplaceholder.typicode.com/posts", {
-    title: "foo",
-    body: "bar",
-    userId: 1,
-  })
-  .then((response) => {
-    console.log(response.data);
-  })
-  .catch((error) => {
-    console.error(error);
-  });
+axios.post('https://api.example.com/user', {
+  firstName: 'John',
+  lastName: 'Doe'
+})
+.then(response => {
+  console.log('User created:', response.data);
+})
+.catch(error => {
+  console.error('Error creating user:', error);
+});
+```
+
+### Request with Custom Headers and Query Parameters
+
+```js
+axios.get('https://api.example.com/items', {
+  params: { category: 'books', sort: 'asc' },
+  headers: { 'Authorization': 'Bearer token' }
+})
+.then(response => {
+  console.log(response.data);
+});
 ```
 
 ### Using Async/Await
@@ -76,192 +82,144 @@ axios
 ```js
 async function fetchData() {
   try {
-    const response = await axios.get(
-      "https://jsonplaceholder.typicode.com/posts/1",
-    );
+    const response = await axios.get('https://api.example.com/data');
     console.log(response.data);
   } catch (error) {
     console.error(error);
   }
 }
+
 fetchData();
 ```
 
-### Setting Default Configuration
+### Using Interceptors
 
 ```js
-const instance = axios.create({
-  baseURL: "https://api.example.com",
-  timeout: 1000,
-  headers: { Authorization: "Bearer token123" },
+// Request interceptor to add authentication token
+axios.interceptors.request.use(config => {
+  config.headers.Authorization = 'Bearer YOUR_TOKEN';
+  return config;
+}, error => {
+  return Promise.reject(error);
 });
 
-instance
-  .get("/user")
-  .then((response) => console.log(response.data))
-  .catch((error) => console.error(error));
+// Response interceptor to log responses
+axios.interceptors.response.use(response => {
+  console.log('Response received:', response.status);
+  return response;
+}, error => {
+  return Promise.reject(error);
+});
 ```
 
-### Request Interceptors
-
-```js
-axios.interceptors.request.use(
-  (config) => {
-    // Modify config before request is sent
-    config.headers["X-Custom-Header"] = "foobar";
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
-```
-
-### Response Interceptors
-
-```js
-axios.interceptors.response.use(
-  (response) => {
-    // Any status code within 2xx range triggers this
-    // You can modify response here
-    return response;
-  },
-  (error) => {
-    // Handle response errors globally
-    return Promise.reject(error);
-  },
-);
-```
-
-### Cancel Request Example
+### Cancelling Requests
 
 ```js
 const CancelToken = axios.CancelToken;
 const source = CancelToken.source();
 
-axios
-  .get("/user/12345", {
-    cancelToken: source.token,
-  })
-  .catch(function (thrown) {
-    if (axios.isCancel(thrown)) {
-      console.log("Request canceled", thrown.message);
-    } else {
-      // handle error
-    }
-  });
+axios.get('https://api.example.com/data', {
+  cancelToken: source.token
+}).catch(thrown => {
+  if (axios.isCancel(thrown)) {
+    console.log('Request canceled', thrown.message);
+  } else {
+    console.error('Error:', thrown);
+  }
+});
 
 // Cancel the request
-source.cancel("Operation canceled by the user.");
+source.cancel('Operation canceled by the user.');
 ```
 
 ---
 
 ## API Reference
 
-### `axios(config)`
+### axios(config)
 
-Makes an HTTP request based on the specified config object.
+Sends an HTTP request based on the provided configuration.
 
-- `config` (object) parameters include:
-  - `url` (string): The server URL.
-  - `method` (string): HTTP method ('get', 'post', 'put', etc.).
-  - `baseURL` (string): Base URL prepended to `url`.
-  - `headers` (object): Custom headers to send.
-  - `params` (object): URL parameters to send with the request.
-  - `data` (object|string|FormData): The request body data.
-  - `timeout` (number): Timeout in milliseconds.
-  - `responseType` (string): Expected response type ('json', 'blob', 'text', 'stream', etc.).
-  - `cancelToken` (CancelToken): Token to cancel request.
-  - Other advanced options (auth, maxContentLength, onUploadProgress, etc.).
+- **Parameters:**
+  - `config` (object): Configuration object for the request.
+    - `url` (string): The URL to send the request to.
+    - `method` (string): HTTP method (GET, POST, PUT, DELETE, PATCH, etc.).
+    - `baseURL` (string): Base URL prepended to `url`.
+    - `headers` (object): Custom headers to send.
+    - `params` (object): URL parameters to be appended.
+    - `data` (any): Data to be sent as the request body.
+    - `timeout` (number): Timeout in milliseconds.
+    - `responseType` (string): Type of data expected back (e.g., 'json', 'blob').
+    - `cancelToken` (CancelToken): Token to cancel request.
+    - ...and others.
 
-Returns a Promise resolving to a response object.
+- **Returns:** A Promise that resolves to a response object or rejects with an error.
 
----
+### axios.get(url[, config])
 
-### Shorthand Methods
+Shortcut for GET requests.
 
-- `axios.get(url[, config])`
-- `axios.post(url[, data[, config]])`
-- `axios.put(url[, data[, config]])`
-- `axios.delete(url[, config])`
-- `axios.patch(url[, data[, config]])`
-- `axios.head(url[, config])`
-- `axios.options(url[, config])`
+- **Parameters:**
+  - `url` (string): URL for the HTTP request.
+  - `config` (object, optional): Additional request configuration.
 
-These methods accept parameters for URL, optional data (for POST, PUT, PATCH), and optional config, and return a Promise.
+- **Returns:** Promise resolving to response object.
 
----
+### axios.post(url[, data[, config]])
 
-### `axios.create([config])`
+Shortcut for POST requests.
 
-Creates a new Axios instance with a custom config.
+- **Parameters:**
+  - `url` (string): URL for the HTTP request.
+  - `data` (any, optional): Data to send as request body.
+  - `config` (object, optional): Additional request configuration.
 
-- Useful to create separate clients with different base URLs or headers.
+- **Returns:** Promise resolving to response object.
 
----
+### axios.put(url[, data[, config]])
 
-### `axios.CancelToken`
+Shortcut for PUT requests.
 
-Factory to create cancel tokens to cancel requests.
+### axios.delete(url[, config])
 
----
+Shortcut for DELETE requests.
 
-### `axios.isCancel(value)`
+### axios.patch(url[, data[, config]])
 
-Returns `true` if the value is a cancellation error, otherwise `false`.
+Shortcut for PATCH requests.
 
----
+### axios.create([config])
 
-### Response Object
+Creates a new Axios instance with a custom configuration.
 
-Returned from successful requests:
+- **Parameters:**
+  - `config` (object, optional): Default configuration for the instance.
 
-- `data`: The response body (transformed to JSON if responseType is 'json').
-- `status`: HTTP status code.
-- `statusText`: HTTP status message.
-- `headers`: Response headers.
-- `config`: The request config used.
-- `request`: The raw request object.
+- **Returns:** New Axios instance with the custom config.
 
----
+### axios.interceptors.request.use(onFulfilled, onRejected)
 
-### Error Object
+Adds a request interceptor.
 
-Thrown on request failure or bad HTTP status (if `validateStatus` is configured):
+- `onFulfilled` (function): Function to execute on intercepted request config.
+- `onRejected` (function): Function to execute on request error.
 
-- `message`: Error message.
-- `response`: The response object (if available).
-- `request`: The request object.
-- `config`: The request config.
-- `code`: Error code (e.g., 'ECONNABORTED' for timeout).
-- `isAxiosError`: Boolean flag.
+Returns interceptor ID.
 
----
+### axios.interceptors.response.use(onFulfilled, onRejected)
 
-## Contributing
+Adds a response interceptor.
 
-Axios welcomes contributions! To contribute:
+### axios.CancelToken
 
-1. Fork the GitHub repository.
-2. Create a topic branch for your feature or bugfix.
-3. Write tests for new features or bugs.
-4. Follow the project's coding style.
-5. Run existing tests to ensure nothing breaks.
-6. Submit a pull request with a clear description.
+Constructor for creating cancel tokens to abort requests.
 
-Be sure to review Axios's contribution guidelines for detailed instructions.
+### axios.isCancel(value)
+
+Checks if an error was caused by cancellation.
 
 ---
 
 ## License
 
-Axios is licensed under the [MIT License](https://github.com/axios/axios/blob/master/LICENSE).
-
----
-
-## Contact
-
-- GitHub Repository: [https://github.com/axios/axios](https://github.com/axios/axios)
-- Issues: Use GitHub Issues for bug reports and feature requests.
-- Maintainers can be reached via GitHub or discussed in issues and pull requests.
+Axios is licensed under the MIT License. See the [LICENSE](https://github.com/axios/axios/blob/main/LICENSE) file for details.

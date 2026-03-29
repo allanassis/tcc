@@ -2,166 +2,191 @@
 
 ## Overview
 
-`notes-cli` is a simple and efficient command-line tool designed for managing plain text notes. Its main purpose is to provide a minimalistic, fast, and easy way to create, search, and manage notes within a terminal environment. It is particularly useful for developers and users who want to keep organized text-based notes without the overhead of complex note-taking applications.
+`notes-cli` is a simple and lightweight command-line tool for managing and manipulating personal notes stored as plain text files. It is designed to provide fast and intuitive note-taking, searching, and organizing capabilities directly from the terminal without the need for complex setups or databases. The tool emphasizes ease of use with common file system operations enhanced with note-specific features.
 
 ### Domain Concepts
 
-- **Note**: A plain text file representing a unit of information or thought.
-- **Tags**: Keywords associated with notes for easier organization and retrieval.
-- **Search**: Querying notes by content or tags using efficient search mechanisms.
-- **Note Storage**: Notes are stored as files in a directory structure on disk.
-- **Command-line Interface**: Interaction with the tool happens through text commands in a Unix-like terminal.
+- **Notes as Files:** Individual notes are stored as plain text files in a user-specified directory.
+- **Note Searching:** Supports searching notes by keywords or tags.
+- **Note Editing:** Launches the user’s preferred terminal editor to create or modify notes.
+- **Tagging:** Enables categorizing notes with tags for easier retrieval.
+- **Note Listing and Filtering:** Lists notes with optional filters such as by recent activity or tags.
+- **Metadata:** Notes can include metadata such as creation date and tags inside the file content.
+
+`notes-cli` models the note-taking domain by treating notes as lightweight text files and providing commands for common workflows like adding, editing, searching, and listing notes with tagging support.
 
 ---
 
 ## Installation
 
-`notes-cli` can be installed from source or via package managers if supported.
+`notes-cli` is a Go-based application that can be installed easily via precompiled binaries, package managers, or Go tools.
 
-### Installing from source
+### Using precompiled binaries
 
-1. Clone the repository:
+Download the latest release from the GitHub repository's [Releases](https://github.com/rhysd/notes-cli/releases) page for your OS and architecture.
+
+Unpack and move executable to a directory in your `PATH`.
+
+### Using Homebrew (macOS / Linux)
+
+```bash
+brew install rhysd/tap/notes-cli
+```
+
+### Building from source
+
+Prerequisites:
+
+- Go 1.13 or later installed.
 
 ```bash
 git clone https://github.com/rhysd/notes-cli.git
 cd notes-cli
+make build
+./notes
 ```
 
-2. Build (if necessary, depending on language/toolchain - typically Rust or other):
-
-For Rust (if notes-cli is a Rust project):
-
-```bash
-cargo install --path .
-```
-
-Or build and install manually as per language/toolchain instructions.
-
-### Other installation methods
-
-Check the repository README or releases section for pre-built binaries or package manager availability.
+Add the executable `notes` to your system `PATH` for convenience.
 
 ---
 
 ## Usage and Examples
 
-The main interaction with `notes-cli` happens through various subcommands to create, edit, search, and list notes.
+`notes-cli` uses a command-line interface with subcommands for different operations.
 
-### Basic Commands
-
-- **Create a new note**:
+Basic command structure:
 
 ```bash
-notes new "note-title"
+notes [command] [flags]
 ```
 
-Creates a new note titled "note-title" and opens it for editing.
+### Common Commands and Usage Patterns
 
-- **List notes**:
+#### Create or Edit a Note
+
+Launches your default editor (configurable via `$EDITOR` environment variable) to create or update a note.
+
+```bash
+notes edit mynote
+```
+
+If the note `mynote` does not exist, a new file is created.
+
+#### Search Notes
+
+Search notes by text or tag with a fast search engine supporting regex.
+
+```bash
+notes search keyword
+```
+
+To search notes containing a tag, use:
+
+```bash
+notes search -t tagname
+```
+
+#### List Notes
+
+Lists notes by modification time or filtered by tags.
 
 ```bash
 notes list
 ```
 
-Lists all saved notes with their titles and metadata.
-
-- **Search notes by keyword**:
+To list notes tagged with a specific label:
 
 ```bash
-notes search "keyword"
+notes list -t tagname
 ```
 
-Searches all notes containing the keyword.
+#### Show Note Content
 
-- **Add tags to a note**:
+Displays note contents in the terminal.
 
-Tags can be added in the note content or via commands (if supported), allowing categorization.
+```bash
+notes show mynote
+```
 
 ---
 
-### Example Workflow
+### Sample Workflows
 
-1. Create a new note:
+1. **Add a new note**
 
 ```bash
-notes new "Meeting Notes"
+notes edit "project-ideas"
+# Write your ideas in the opened editor, then save and exit.
 ```
 
-2. Edit the note in the default editor.
-
-3. Search for notes related to "project":
+2. **Search notes containing "meeting"**
 
 ```bash
-notes search "project"
+notes search meeting
 ```
 
-4. List notes with a specific tag (if tags supported):
+3. **List notes tagged as "todo"**
 
 ```bash
-notes list --tag "work"
+notes list -t todo
+```
+
+4. **View the content of a note**
+
+```bash
+notes show project-ideas
 ```
 
 ---
 
 ## API Reference
 
-`notes-cli` primarily exposes its functionality as CLI commands. The main commands and their options include:
+### Main Commands
 
-### `notes new <title>`
+#### `notes edit [note-name]`
 
-Creates a new note with the specified title. Opens the note in the configured editor.
+- Description: Open a note in editor for creation or modification.
+- Parameters:
+  - `note-name` (string): The name of the note (file) to edit.
+- Behavior:
+  - Opens the note file in the editor specified by `$EDITOR`.
+  - If no note-name is provided, may open a default note or prompt for input.
 
-- `title` (string): Title of the new note.
+#### `notes search [pattern]`
 
-### `notes list [--tag <tag>]`
+- Description: Search notes by keyword or tag.
+- Parameters:
+  - `pattern` (string): The search keyword or regex pattern.
+  - `-t`, `--tag` (string, optional): Filter notes by tag.
+- Behavior:
+  - Returns a list of notes matching the pattern or tag.
+  - Supports regex for advanced search patterns.
 
-Lists notes. Optionally filters notes by a tag.
+#### `notes list`
 
-- `--tag` (string, optional): Filter notes by the given tag.
+- Description: List all notes.
+- Options:
+  - `-t`, `--tag` (string, optional): Filter list by tag.
+  - `-r`, `--recent` (bool): Sort by recent modification.
+- Behavior:
+  - Lists notes with optional filtering by tags or sorted by recent activity.
 
-### `notes search <query>`
+#### `notes show [note-name]`
 
-Searches for notes containing the query string.
+- Description: Output the content of a specified note.
+- Parameters:
+  - `note-name` (string): Name of the note to display.
+- Behavior:
+  - Prints the content of the note to the terminal.
 
-- `query` (string): The search keyword or phrase.
+### Configuration and Environment
 
-### `notes edit <note-id>`
-
-Opens an existing note identified by `note-id` in the default editor.
-
-- `note-id` (string or number): Identifier of the note to edit.
-
-### `notes delete <note-id>`
-
-Deletes the specified note.
-
-- `note-id` (string or number): Identifier of the note to delete.
-
----
-
-## Contributing
-
-Contributions are welcome! To contribute to `notes-cli`:
-
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature-name`).
-3. Make your changes and add tests if applicable.
-4. Commit your changes (`git commit -m "Add feature"`).
-5. Push to your branch (`git push origin feature-name`).
-6. Create a pull request via GitHub.
-
-Please follow the project's coding style and make sure tests pass.
+- Notes directory path can be configured via environment variable `NOTES_DIR`. Default location is `~/notes`.
+- Editor is selected from the `$EDITOR` environment variable.
+- Tags are recognized as words prefixed with `#` in note content.
 
 ---
 
 ## License
 
-`notes-cli` is licensed under the MIT License. See the [LICENSE](https://github.com/rhysd/notes-cli/blob/master/LICENSE) file for details.
-
----
-
-## Contact
-
-- Repository: [https://github.com/rhysd/notes-cli](https://github.com/rhysd/notes-cli)
-- Issues: Use the GitHub Issues page to report bugs or request features.
-- Author: Ryuta Hosoya (rhysd)
+`notes-cli` is licensed under the MIT License. See [LICENSE](https://github.com/rhysd/notes-cli/blob/master/LICENSE) in the repository for details.

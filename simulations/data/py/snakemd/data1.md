@@ -2,163 +2,120 @@
 
 ## Overview
 
-SnakeMD is a command-line tool that converts Markdown files into well-formatted terminal output with color and style, enhancing the readability of Markdown documents directly in the terminal. It is designed to bring the beauty and structure of Markdown to terminal users without needing to view the files in a browser or editor supporting Markdown syntax.
+SnakeMD is a command-line tool and Python library designed to convert Markdown or a subset of Markdown with embedded Python code into styled, easy-to-read HTML resumes or CVs. It emphasizes simplicity in creating personalized resumes with full Markdown syntax and Python integration, enabling dynamic content generation.
 
 ### Domain Concepts
 
-- **Markdown Rendering:** SnakeMD interprets Markdown syntax such as headings, lists, code blocks, links, emphasis, and tables to produce styled terminal output.
-- **Terminal Styling:** Utilizes terminal color and text styles (bold, italic, underline) and Unicode symbols to enhance Markdown visualization.
-- **Command Line Interface:** Provides a terminal command that accepts Markdown files as input and outputs transformed content to the terminal.
-- **Parsing and Formatting:** Internally parses Markdown content and maps it to styled terminal sequences for display.
+- **Markdown Parsing:** SnakeMD processes Markdown content, including headings, lists, links, and styling.
+- **Python Code Execution:** Embedded Python code within the Markdown can be executed to dynamically inject content.
+- **Resume/CV Styling:** The tool applies a clean, professional style to the generated HTML for resumes.
+- **Templating and Export:** Conversion from Markdown format to styled HTML output for easy distribution or web publishing.
 
-By understanding these concepts, users can effectively convert and preview Markdown content for documentation, notes, READMEs, or other purposes directly in a terminal environment.
+SnakeMD models the domain of resume writing and web publishing, facilitating both static and programmatically crafted resume content with Python-augmented Markdown.
 
 ---
 
 ## Installation
 
-### Prerequisites
+Ensure Python 3.6+ is installed.
 
-- Python 3.7 or higher
-- pip (Python package installer)
-
-### Installing via pip
+### Install via pip
 
 ```bash
 pip install snakemd
-```
-
-This installs the `snakemd` CLI tool globally.
-
-### Alternative: Clone and Install Manually
-
-```bash
-git clone https://github.com/TheRenegadeCoder/SnakeMD.git
-cd SnakeMD
-pip install .
 ```
 
 ---
 
 ## Usage and Examples
 
-### Basic Usage
+### Command Line Interface (CLI) Usage
 
-Render a Markdown file to the terminal:
+To convert a Markdown resume into styled HTML, use:
 
 ```bash
-snakemd README.md
+snakemd input_resume.md -o output_resume.html
 ```
 
-This command parses the `README.md` file and outputs the styled content in the terminal.
+Where:
 
-### Using SnakeMD in Python Code
+- `input_resume.md` is your source Markdown file with optional embedded Python.
+- `-o output_resume.html` specifies the output HTML file.
 
-You can also use SnakeMD programmatically via its API to convert Markdown strings to styled terminal text.
+### Example Markdown snippet with embedded Python code
 
-Example:
+```markdown
+# John Doe
 
-````python
-from snakemd import snakemd
+Email: {{ "john.doe@example.com" }}
 
-md_content = """
-# Hello World
+## Skills
 
-This is a *sample* **Markdown** document.
+- Python
+- Markdown
+- Web Development
 
-- Item 1
-- Item 2
+## Summary
 
-`inline code`
+This resume was generated on {{ import datetime; datetime.datetime.now().strftime("%Y-%m-%d") }}.
+```
+
+Using SnakeMD, the `{{ ... }}` blocks are treated as Python code and evaluated during conversion.
+
+### Using SnakeMD as a Python Library
 
 ```python
-def greet():
-    print("Hello, SnakeMD!")
-````
+from snakemd import SnakeMD
 
+# Sample markdown content with embedded Python
+markdown_text = """
+# Jane Doe
+
+Email: {{ "jane.doe@example.com" }}
+
+## Projects
+
+- SnakeMD - A Markdown to styled resume converter.
+
+Date generated: {{ import datetime; datetime.datetime.today().strftime("%B %d, %Y") }}
 """
 
-styled_output = snakemd.snakemd_to_ansi(md_content)
-print(styled_output)
+converter = SnakeMD()
+html_output = converter.render(markdown_text)
 
-````
+print(html_output)
+```
 
-This will print the Markdown content with colors and styles appropriate for terminal display.
-
-### Options
-
-- `-c` or `--color`: Enable or disable color output.
-- `-t` or `--theme`: Choose a color theme if available.
-- `-v` or `--version`: Show version information.
-- `-h` or `--help`: Show help message.
-
-Example with options:
-
-```bash
-snakemd -c False example.md
-````
-
-Disables color output.
+This produces the styled HTML resume content as a string.
 
 ---
 
 ## API Reference
 
-### `snakemd.snakemd_to_ansi(md_text: str) -> str`
+### Class: `SnakeMD`
 
-Converts Markdown text to an ANSI-colored string suitable for terminal output.
+Main class providing conversion functionalities from Markdown with embedded Python to HTML.
 
-- **Parameters:**
-  - `md_text` (str): The Markdown formatted string.
-- **Returns:**
-  - `str`: A string with ANSI escape codes for terminal styling.
+#### Methods:
 
-### `snakemd.snakemd_cli()`
+- `SnakeMD.render(markdown_text: str) -> str`
+  - Converts the input Markdown text into styled HTML.
+  - Executes Python code embedded within `{{ ... }}` placeholders.
+  - Returns the resulting HTML string.
+  - Raises exceptions on syntax errors in embedded Python or markdown processing.
 
-The main entry point for the command-line interface. Processes command-line arguments and outputs styled Markdown.
+- `SnakeMD.render_file(input_path: str) -> str`
+  - Reads a Markdown file, processes embedded Python, and returns HTML content as string.
+  - Used internally by CLI for file conversion.
 
-### Command-Line Interface
+### Command Line Options
 
-- Accepts one or more Markdown file paths or stdin input.
-- Parses Markdown content.
-- Writes styled terminal output to stdout.
-
----
-
-## Contributing
-
-Contributions to SnakeMD are welcome! You can help by:
-
-- Reporting issues or bugs on the GitHub issue tracker.
-- Submitting pull requests with bug fixes, new features, or improvements.
-- Improving documentation or adding examples.
-- Suggesting or implementing new themes for terminal rendering.
-
-### How to contribute
-
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature-or-bugfix`).
-3. Make your changes and commit with clear messages.
-4. Push the branch and submit a pull request on GitHub.
-
-Please ensure tests pass and code style aligns with the repository before submitting.
+- `snakemd <input_file>`: Converts the Markdown file to HTML and prints it to stdout.
+- `-o, --output <output_file>`: Specifies a file to save the HTML output.
+- `-h, --help`: Show help message and usage instructions.
 
 ---
 
 ## License
 
-SnakeMD is licensed under the MIT License. See the [LICENSE](https://github.com/TheRenegadeCoder/SnakeMD/blob/master/LICENSE) file for details.
-
----
-
-## Contact
-
-- GitHub Repository: [https://github.com/TheRenegadeCoder/SnakeMD](https://github.com/TheRenegadeCoder/SnakeMD)
-- Issues and Feature Requests: Use GitHub issues at the repository page.
-- Maintainer: The Renegade Coder (GitHub community)
-
-For questions or support, please open an issue on GitHub.
-
-```
-
-```
+SnakeMD is licensed under the MIT License. See the [LICENSE](https://github.com/TheRenegadeCoder/SnakeMD/blob/main/LICENSE) file for details.

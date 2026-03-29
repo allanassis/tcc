@@ -2,169 +2,110 @@
 
 ## Overview
 
-SnakeMD is a Markdown editor designed for the terminal, bringing a powerful and user-friendly Markdown editing experience to command-line interfaces. It focuses on providing live preview, smooth navigation, and full Markdown support, enabling users to create and edit Markdown files efficiently without leaving the terminal environment.
+SnakeMD is a Markdown parser designed to transform Markdown content into stylized terminal output. It enables users to write rich text documentation, README files, or notes using Markdown syntax and display them beautifully within command-line interfaces (CLI). The tool focuses on faithfully representing Markdown elements such as headings, code blocks, lists, links, and text styles (bold, italics) with colored and formatted terminal output.
 
 ### Domain Concepts
 
-- **Markdown Editing:** SnakeMD models the domain concepts of Markdown syntax, including headings, lists, links, code blocks, and formatting styles.
-- **Terminal-based UI:** It embraces terminal-based text editing paradigms with concepts like screens, buffers, and keybindings adapted for Markdown.
-- **Live Preview:** The tool shows a real-time rendered version of the Markdown content alongside or integrated with the editor.
-- **Navigation & Interaction:** Uses keyboard shortcuts and commands for editing, previewing, and managing Markdown documents entirely within the terminal.
+- **Markdown Syntax:** A lightweight markup language for formatting text, including headers, emphasis, code snippets, lists, blockquotes, and links.
+- **Terminal Rendering:** Displaying styled text in terminal environments using colors, fonts, and layout approximations.
+- **Text Parsing and Tokenization:** The process of analyzing raw Markdown content, recognizing syntactic structures, and converting them into a format suitable for terminal output.
+- **Themes and Styling:** Applying color schemes and text styles to different Markdown elements for better readability.
 
-SnakeMD aims to streamline Markdown writing workflows for developers and writers who prefer terminal tools yet want rich Markdown support.
+SnakeMD abstracts these concepts into an API that allows users to render Markdown dynamically, enhancing CLI application documentation, help menus, and other text-based user interactions.
 
 ---
 
 ## Installation
 
-You can install SnakeMD on multiple platforms. It requires Rust and Cargo, the Rust package manager.
-
 ### Prerequisites
 
-- Rust and Cargo installed. See the official Rust installation guide: https://rustup.rs/
+- Node.js (version 12 or later)
+- npm (Node Package Manager)
 
-### Install via Cargo
-
-```bash
-cargo install snakemd
-```
-
-### Download pre-built binaries
-
-Visit the GitHub releases page and download the binary for your platform:  
-https://github.com/TheRenegadeCoder/SnakeMD/releases
-
-### Build from source
-
-Clone the repo and build manually:
+### Install via npm
 
 ```bash
-git clone https://github.com/TheRenegadeCoder/SnakeMD.git
-cd SnakeMD
-cargo build --release
+npm install -g snakemd
 ```
 
-The executable will be in the `target/release` directory.
+This global installation adds the `snakemd` command-line tool to your environment.
+
+### Install as a local dependency
+
+```bash
+npm install snakemd
+```
+
+When installed locally, you can import and use SnakeMD in your JavaScript or TypeScript projects.
 
 ---
 
 ## Usage and Examples
 
-### Basic usage
+### Using SnakeMD as a CLI Tool
 
-To open or create a Markdown file:
+Render a Markdown file directly in the terminal:
 
 ```bash
-snakemd file.md
+snakemd README.md
 ```
 
-This opens `file.md` in the SnakeMD editor. If the file does not exist, it creates a new one.
+This command reads the `README.md` file and outputs the formatted content in the terminal, styled according to SnakeMD's default theme.
 
-### Navigation and editing
+### Rendering from Standard Input
 
-- Use arrow keys, PageUp/PageDown to navigate.
-- Use standard Markdown syntax to write headings, lists, links, etc.
-- Keyboard shortcuts provide quick access to formatting, help, and preview.
+You can pipe Markdown content into SnakeMD:
 
-### Live preview mode
-
-Toggle the live Markdown preview with:
-
-```
-Ctrl + P
+```bash
+cat README.md | snakemd
 ```
 
-This renders the current Markdown content as formatted text in the terminal alongside the editor.
+This is useful for dynamic content rendering and integration into scripts.
 
-### Common keybindings
+### Using SnakeMD Programmatically
 
-| Shortcut | Action              |
-| -------- | ------------------- |
-| Ctrl + S | Save current file   |
-| Ctrl + Q | Quit the editor     |
-| Ctrl + P | Toggle live preview |
-| Ctrl + H | Show help           |
+Import and use SnakeMD in a Node.js application:
+
+```js
+const snakemd = require("snakemd");
+const fs = require("fs");
+
+const markdownText = fs.readFileSync("README.md", "utf-8");
+
+const styledText = snakemd(markdownText);
+console.log(styledText);
+```
+
+This snippet reads a Markdown file and converts it into styled terminal output.
 
 ---
 
 ## API Reference
 
-As a terminal application written in Rust, SnakeMD's main user-facing APIs are its command-line interface and keyboard shortcuts. For developers interested in extending or understanding the internal API, the core modules and their execution facts include:
+### `snakemd(markdown: string): string`
 
-### Command-line Interface (CLI)
+- **Purpose:** Parses the given Markdown string and returns a string formatted with terminal escape codes to render colors and styles.
 
-- `snakemd <filepath>`
+- **Parameters:**
+  - `markdown` (`string`): The raw Markdown content to parse and render.
 
-  Opens the specified Markdown file or creates a new one if it doesn't exist.
+- **Returns:** A terminal-formatted string with styles and colors applied according to Markdown semantics.
 
-- Flags:
-  - `--help` or `-h`: Displays help information.
-  - `--version` or `-v`: Shows the current version of SnakeMD.
+### Key Execution Facts
 
-### Core Modules (for developers)
-
-- **Editor Module**
-
-  Handles input capturing, text insertion, deletion, cursor movement, and buffer management.
-
-- **Renderer Module**
-
-  Parses Markdown source to terminal-rendered formatted text for live preview.
-
-- **UI Module**
-
-  Manages terminal UI layout, including editor pane and preview pane, handles keyboard events and screen refresh.
-
-- **File Module**
-
-  Responsible for filesystem interactions: reading and writing Markdown files.
-
-### Execution Facts
-
-- Opening a file loads its content into the editor buffer.
-- Key presses trigger event handlers that modify the buffer or the UI state.
-- The live preview updates upon buffer changes and renders Markdown to terminal output.
-- Saving writes the buffer contents back to the file atomically.
-- Quitting exits gracefully after prompting to save unsaved changes.
-
----
-
-## Contributing
-
-Contributions to SnakeMD are welcome! Whether you want to fix bugs, improve documentation, or add new features:
-
-1. Fork the repository on GitHub.
-2. Create a feature branch (`git checkout -b feature-name`).
-3. Make your changes with clear commit messages.
-4. Test your changes to ensure no regressions.
-5. Submit a pull request for review.
-
-Please adhere to Rust coding conventions and existing project style guidelines.
+- The `snakemd` function processes Markdown elements including:
+  - Headers (levels 1 to 6)
+  - Bold, Italic, and Strikethrough text
+  - Inline code and code blocks
+  - Ordered and unordered lists
+  - Blockquotes
+  - Links (displaying URLs in styled format)
+- The return string includes ANSI escape sequences compatible with most terminals.
+- Syntax highlighting is applied to code blocks if the language is specified.
+- Errors during parsing fallback gracefully to return the original Markdown string.
 
 ---
 
 ## License
 
-SnakeMD is distributed under the MIT License. See the [LICENSE](https://github.com/TheRenegadeCoder/SnakeMD/blob/main/LICENSE) file for details.
-
----
-
-## Contact
-
-- **GitHub Repository:** [https://github.com/TheRenegadeCoder/SnakeMD](https://github.com/TheRenegadeCoder/SnakeMD)
-- For issues and feature requests, use the [GitHub Issues](https://github.com/TheRenegadeCoder/SnakeMD/issues) page.
-- Community discussions and contributions are welcome via GitHub pull requests.
-
----
-
-## Example Session
-
-Open a file for editing:
-
-```bash
-snakemd notes.md
-```
-
-Write Markdown content, toggle live preview with `Ctrl + P`, save with `Ctrl + S`, and quit with `Ctrl + Q`.
-
-Enjoy seamless terminal-based Markdown editing powered by SnakeMD!
+SnakeMD is licensed under the MIT License. See the [LICENSE](https://github.com/TheRenegadeCoder/SnakeMD/blob/master/LICENSE) file for details.

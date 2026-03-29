@@ -1,60 +1,74 @@
-# jq - Command-line JSON Processor
+# jq
 
 ## Overview
 
-`jq` is a powerful, flexible, and lightweight command-line tool designed for parsing, filtering, transforming, and outputting JSON data. It allows users to slice, filter, map, and transform structured JSON data with a concise and expressive programming language resembling functional programming.
+`jq` is a lightweight and flexible command-line JSON processor. It allows users to slice, filter, map, and transform structured JSON data with ease. As a domain-specific language and tool designed for querying and manipulating JSON, `jq` brings powerful expressions inspired by functional programming, enabling complex data extraction and transformation workflows in shell environments.
 
-### Domain Concepts
+The main domain concepts of `jq` include:
 
-- **JSON (JavaScript Object Notation):** The primary data format that `jq` operates on. JSON is a common, text-based data interchange format.
-- **Filters:** Expressions defining how to transform JSON data; these are the core building blocks of `jq` programs.
-- **Streams:** `jq` can process JSON in a streaming fashion, which is efficient for large datasets.
-- **Pipelines:** Composition of filters, where output from one filter becomes input to the next.
-- **Modules:** Reusable collections of jq functions and filters.
-- **Data Types:** Supported JSON types (objects, arrays, numbers, strings, booleans, null) and jq-specific constructs.
-- **Operators:** Syntax elements for manipulating JSON including pipes, conditionals, arrays, objects, and more.
+- **JSON:** JavaScript Object Notation, a lightweight data interchange format that `jq` operates upon.
+- **Filters:** Expressions that transform JSON inputs by selecting, altering, or generating new JSON values.
+- **Streams:** Inputs and outputs in JSON format, supporting processing of large or continuous data.
+- **Operators and Functions:** Built-in constructs for manipulation, arithmetic, logic, and data access.
+- **Modules:** Packages of functions and definitions that extend `jq`'s capabilities and enable code reuse.
+- **Pipelines:** Chaining of filters to perform complex transformations step-by-step.
 
-`jq` enhances workflows involving JSON manipulation by allowing complex data extraction and transformation tasks scripted via the command-line or embedded in shell scripts, CI pipelines, and programming environments.
+`jq` is widely used in scripting, automation, data parsing, REST API interactions, and anywhere JSON processing is required on the command line.
 
 ---
 
 ## Installation
 
-`jq` binaries are available for major platforms including Linux, macOS, and Windows.
+`jq` can be installed on various platforms:
 
-### Using package managers
+### Linux
 
-- **macOS (Homebrew):**
+Using package managers:
 
-  ```bash
-  brew install jq
-  ```
-
-- **Debian/Ubuntu:**
+- Debian/Ubuntu:
 
   ```bash
   sudo apt-get install jq
   ```
 
-- **Fedora:**
+- Fedora:
 
   ```bash
   sudo dnf install jq
   ```
 
-- **Windows (Chocolatey):**
+- Arch Linux:
 
-  ```powershell
+  ```bash
+  sudo pacman -S jq
+  ```
+
+### macOS
+
+Using Homebrew:
+
+```bash
+brew install jq
+```
+
+### Windows
+
+- Download precompiled binaries from the official jq website: https://stedolan.github.io/jq/download/
+
+- Alternatively, install via package managers like Chocolatey:
+
+  ```bash
   choco install jq
   ```
 
-### From source
+### Build from Source
 
-Clone the repository and build with `make`:
+Clone the repository and build using make:
 
 ```bash
 git clone https://github.com/jqlang/jq.git
 cd jq
+autoreconf -i
 ./configure
 make
 sudo make install
@@ -64,37 +78,43 @@ sudo make install
 
 ## Usage and Examples
 
-`jq` reads JSON from standard input or file and applies filters to transform it.
-
-### Basic example: Pretty-print JSON
+`jq` reads JSON from standard input and writes the result to standard output. The core usage pattern is:
 
 ```bash
-cat sample.json | jq .
+jq [options] <filter> [file...]
 ```
 
-### Selecting a field from JSON objects
+### Example 1: Pretty-print JSON
 
-Input JSON:
+```bash
+cat data.json | jq .
+```
+
+Output is formatted, indented JSON for easy reading.
+
+### Example 2: Extract object fields
+
+Given input:
 
 ```json
-{ "name": "Alice", "age": 30 }
+{ "name": "Alice", "age": 30, "city": "Wonderland" }
 ```
 
-Filter to get the name field:
+Run:
 
 ```bash
-echo '{ "name": "Alice", "age": 30 }' | jq '.name'
+jq '.name' input.json
 ```
 
 Output:
 
-```
+```json
 "Alice"
 ```
 
-### Filtering arrays
+### Example 3: Filter arrays
 
-Given an array of objects:
+Input:
 
 ```json
 [
@@ -103,122 +123,137 @@ Given an array of objects:
 ]
 ```
 
-Filter to select people older than 25:
+Get names of persons older than 26:
 
 ```bash
-jq '.[] | select(.age > 25)'
+jq '.[] | select(.age > 26) | .name' input.json
 ```
 
 Output:
 
 ```json
-{
-  "name": "Alice",
-  "age": 30
-}
+"Alice"
 ```
 
-### Creating new JSON objects
+### Example 4: Modify JSON objects
+
+Add new field:
 
 ```bash
-echo '{"name": "Alice", "age": 30}' | jq '{personName: .name, ageNextYear: (.age + 1)}'
+jq '. + { "country": "Wonderland" }' input.json
 ```
 
-Output:
-
-```json
-{
-  "personName": "Alice",
-  "ageNextYear": 31
-}
-```
-
-### Combining filters and pipes
+### Example 5: Using jq programmatically in shell scripts
 
 ```bash
-jq '.[] | {name: .name, decade: (.age / 10 | floor * 10)}' people.json
+value=$(jq -r '.name' input.json)
+echo "Name is $value"
 ```
-
-This creates a new object for each person with their name and the decade of their age.
 
 ---
 
 ## API Reference
 
-`jq` primarily operates as a command-line program, but also exposes an API for embedding and extending.
+### Command-Line Options
 
-### Command-line Usage
+- `-c`, `--compact-output`
 
-```bash
-jq [options] <jq filter> [file...]
-```
+  Output JSON in compact form (no extra whitespace).
 
-- `<jq filter>`: The core JSON-processing expression.
-- `[file...]`: One or more JSON files. If omitted, reads from standard input.
+- `-r`, `--raw-output`
 
-### Common options
+  Output raw strings, not JSON encoded.
 
-- `-c` : Compact output (each JSON entity on one line).
-- `-r` : Output raw strings, not JSON.
-- `-s` : Read all inputs into an array and process once.
-- `-f <file>` : Read filter from a file instead of command line.
-- `--arg name value` : Set a string variable for use in the filter.
-- `--argjson name value` : Set a JSON variable for use in the filter.
-- `-M` : Monochrome output (disables colorization).
-- `--sort-keys` : Alphabetically sort keys in output JSON objects.
+- `-s`, `--slurp`
 
----
+  Read entire input stream into a large array and apply filter once.
 
-### Embedding API (libjq)
+- `-f program-file`, `--from-file program-file`
 
-`jq` provides a C API to embed its engine into other applications, documented in the `src` folder API headers.
+  Load filter program from a file.
 
-Key functions:
+- `--arg name value`
 
-- `jq_init()`: Creates a new jq state.
-- `jq_compile(jq_state *, const char *program)`: Compiles a jq filter program.
-- `jq_start(jq_state *, jv input, int flags)`: Executes compiled filter on input.
-- `jq_next(jq_state *)`: Returns next output from jq evaluation.
-- `jq_teardown(jq_state *)`: Frees jq state and resources.
+  Pass a string value as a variable to `jq`.
 
----
+- `--argjson name value`
 
-## Usage Patterns
+  Pass a JSON value as a variable.
 
-- **Filtering JSON by keys:** Use `.key` or `.["key"]` to retrieve specific values.
-- **Filtering array elements:** Use `.[]` to iterate elements.
-- **Selecting elements:** Use `select(<condition>)` to filter items based on conditions.
-- **Object construction:** Use `{key: value, ...}` syntax to make new JSON objects.
-- **Pipelines:** Compose filters using `|` to transform data step-by-step.
-- **Functions:** Use built-in jq functions for string manipulation, math, and more.
-- **Variables:** Pass variables from command line with `--arg` or `--argjson` for dynamic queries.
+- `-n`, `--null-input`
+
+  Use `null` as the input instead of reading.
+
+- `-e`, `--exit-status`
+
+  Exit with status 1 if filter output is false or null.
+
+- `--version`
+
+  Show version and exit.
 
 ---
 
-## Contributing
+### Filters and Functions
 
-Contributions are welcome! To participate:
+- Basic filter syntax: This is the core component where JSON is queried and transformed.
 
-1. Fork the `jq` repository on GitHub.
-2. Create a new branch for your feature or bugfix.
-3. Develop your feature following the coding style.
-4. Include tests for any new functionality.
-5. Submit a pull request with a clear description.
+- `.` (dot)
 
-For major changes, please open an issue for discussion first.
+  Represents the current input.
+
+- `.foo`
+
+  Access field `foo` of an object.
+
+- `.[]`
+
+  Iterates over elements of an array.
+
+- `select(condition)`
+
+  Filters elements that satisfy the condition.
+
+- Arithmetic: `+`, `-`, `*`, `/`, `%`
+
+- Comparisons: `==`, `!=`, `>`, `<`, `>=`, `<=`
+
+- Logical: `and`, `or`, `not`
+
+- `map(f)`
+
+  Applies filter `f` to each element in an array.
+
+- `reduce`
+
+  Reduces elements using a reducer function.
+
+- String functions: `length`, `startswith`, `endswith`, `contains`.
+
+- Array functions: `length`, `index`, `sort`, `unique`.
+
+- `input`, `inputs`
+
+  Read JSON inputs separately or as multiple streams.
+
+---
+
+### Execution Facts
+
+- Filters are applied to each JSON input element in a streaming fashion.
+
+- Filter outputs can modify, project or generate JSON values.
+
+- Variables passed at command invocation are accessible inside filters via `$name`.
+
+- If the filter produces multiple outputs, each is printed on its own line.
+
+- Program files can contain function definitions for reuse.
+
+- `jq` expressions can be composed by piping filters together with the pipe operator `|`.
 
 ---
 
 ## License
 
-`jq` is distributed under the MIT License. See the [LICENSE](https://github.com/jqlang/jq/blob/master/LICENSE) file for details.
-
----
-
-## Contact
-
-- Repository: https://github.com/jqlang/jq
-- Issues: https://github.com/jqlang/jq/issues
-- Maintainers and contributors can be contacted via the GitHub repository.
-
----
+`jq` is released under the MIT License. See the LICENSE file at https://github.com/jqlang/jq/blob/master/LICENSE for details.

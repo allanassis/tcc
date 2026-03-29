@@ -2,189 +2,193 @@
 
 ## Overview
 
-Rich is a Python library for rich text and beautiful formatting in the terminal. It provides advanced rendering capabilities for styled text, progress bars, tables, markdown, syntax highlighting, and more. The library focuses on making terminal output visually compelling and readable with a minimal and simple API.
+Rich is a Python library for rich text and beautiful formatting in the terminal. It enables developers to enhance the command-line interface (CLI) output with colors, styles, tables, progress bars, syntax highlighting, markdown rendering, tracebacks, and more. The core domain concepts modeled by Rich include terminal styling, text rendering, layout management, and live updates of console output, which facilitate creating visually appealing and user-friendly terminal applications.
 
 ### Domain Concepts
 
-- **Rich Text Rendering:** Using styles, colors, and text formatting to enhance terminal output.
-- **Console:** Represents the terminal or output stream with capabilities to render rich content.
-- **Markup and Markdown:** Support for lightweight markup syntax and full markdown rendering.
-- **Layouts and Tables:** Organize content into panels, columns, trees, and grids.
-- **Syntax Highlighting:** Highlight source code and other structured text formats with multiple languages support.
-- **Progress Bars:** Display progress with advanced spinners and bar styles.
-- **Logging Integration:** Enhanced log output with colored and styled entries.
-- **Live Updating:** Dynamic refresh of console output for real-time data display.
+- **Console**: The main entry point for printing styled text and rich content.
+- **Text Styling**: Attributes like color, bold, italic, underline, and more to style terminal text.
+- **Markup & ANSI Escape Codes**: Parsing and rendering of markup for styles and colors, and working with ANSI escape sequences.
+- **Syntax Highlighting**: Highlighting source code with language-specific lexers.
+- **Tables & Layouts**: Structured presentation of tabular data and flexible layout management.
+- **Progress Bars**: Visual display of task progress.
+- **Live Updates**: Dynamically updating terminal output without flickering.
+- **Tracebacks**: Enhanced error tracebacks with syntax highlighting and context.
+- **Panels, Boxes, and Trees**: Visual containers and hierarchical data representations.
 
-Rich is designed to work across all major platforms and supports Python 3.6 and above.
+Rich closely models terminal output capabilities and the concept of stylizing and layering information in text interfaces.
 
 ---
 
 ## Installation
 
-### Using pip
+Rich is compatible with Python 3.6 and above.
+
+You can install it using pip:
 
 ```bash
 pip install rich
 ```
 
-### Optional dependencies for enhanced features
+To upgrade to the latest version:
 
-- `pygments` for syntax highlighting.
-- `colorama` on Windows for better color support (often installed automatically).
+```bash
+pip install --upgrade rich
+```
 
 ---
 
 ## Usage and Examples
 
-### Simple Console Output with Styles
+### Printing Rich Text
 
 ```python
 from rich.console import Console
-console = Console()
 
-console.print("Hello, [bold magenta]Rich[/bold magenta]!")
+console = Console()
+console.print("[bold magenta]Hello[/bold magenta] [green]World[/green]!", justify="center")
 ```
 
-Output: The word "Rich" appears in bold magenta color in the terminal.
+Output: Styled text "Hello" in bold magenta, followed by "World" in green, centered.
 
----
-
-### Rendering a Table
+### Using Markup to Style Text
 
 ```python
-from rich.console import Console
+console.print("This is [red]red[/red] and this is [underline]underlined[/underline].")
+```
+
+### Table Example
+
+```python
 from rich.table import Table
 
-console = Console()
+table = Table(title="Star Wars Movies")
 
-table = Table(title="Fruit Prices")
+table.add_column("Released", justify="right", style="cyan", no_wrap=True)
+table.add_column("Title", style="magenta")
+table.add_column("Box Office", justify="right", style="green")
 
-table.add_column("Fruit", style="cyan")
-table.add_column("Price", justify="right", style="green")
-
-table.add_row("Apple", "$1.20")
-table.add_row("Banana", "$0.50")
-table.add_row("Cherry", "$2.00")
+table.add_row("1977", "A New Hope", "$775,398,007")
+table.add_row("1980", "The Empire Strikes Back", "$547,969,004")
+table.add_row("1983", "Return of the Jedi", "$475,106,177")
 
 console.print(table)
 ```
 
----
+### Progress Bar Example
+
+```python
+from rich.progress import track
+import time
+
+for step in track(range(100), description="Processing..."):
+    time.sleep(0.02)
+```
 
 ### Syntax Highlighting Example
 
 ```python
-from rich.console import Console
 from rich.syntax import Syntax
 
-console = Console()
-code = '''
-def hello():
-    print("Hello, Rich!")
-'''
+code = '''def hello_world():
+    print("Hello, World!")'''
 
 syntax = Syntax(code, "python", theme="monokai", line_numbers=True)
 console.print(syntax)
 ```
 
----
-
-### Progress Bar Example
+### Live Updating Example
 
 ```python
-from rich.progress import Progress
+from rich.live import Live
+from rich.table import Table
 import time
 
-with Progress() as progress:
-    task = progress.add_task("[cyan]Processing...", total=100)
-    for _ in range(100):
-        time.sleep(0.05)
-        progress.update(task, advance=1)
+table = Table()
+
+table.add_column("Row ID")
+table.add_column("Description")
+
+with Live(table, refresh_per_second=4):
+    for i in range(10):
+        table.add_row(str(i), f"description {i}")
+        time.sleep(0.4)
 ```
 
 ---
 
 ## API Reference
 
-### `Console` class
+### rich.console.Console
 
-- **Purpose:** Central class for rich text output.
-- **Key methods:**
-  - `print(*objects, **kwargs)`: Print styled or rich content.
-  - `log(message, **kwargs)`: Print a log message with timestamp and style.
-  - `input(prompt)`: Prompt user input with styling.
-- **Parameters:** `file` (optional) to output to a file-like object other than stdout.
+The main interface to print styled and rich content to the terminal.
 
----
+- `Console(file=None, force_terminal=False, color_system=None, width=None, ... )`
 
-### `Table` class
+  Creates a Console instance.
 
-- Used to create and render tables.
-- **Key methods:**
-  - `add_column(header, style=None, justify="left")`: Add a table column.
-  - `add_row(*cells)`: Add a row of cells.
-- Supports styled headers, rows, and columns.
+- `print(*objects, sep=' ', end='\n', style=None, justify=None, markup=False, emoji=True, highlight=False)`
 
----
+  Prints objects with rich formatting.
 
-### `Progress` class
+- `clear()`
 
-- Displays progress bars and spinners.
-- **Key methods:**
-  - `add_task(description, total=None)`: Start a new task.
-  - `update(task_id, advance=None, completed=None)`: Update task progress.
-- Supports multiple concurrent tasks and custom spinner styles.
+  Clears the terminal screen.
 
----
+- `status(text, spinner='dots')`
 
-### `Syntax` class
+  Context manager to display a status spinner.
 
-- Renders syntax-highlighted code blocks.
-- **Constructor:**
-  - `Syntax(code, lexer_name, *, theme="default", line_numbers=False, highlight_lines=None)`
-- Supports many programming languages via Pygments.
+### rich.text.Text
 
----
+A text object that supports complex styling and formatting.
 
-### Key Modules and Features
+- `Text(text, style=None, justify=None, overflow=None, no_wrap=False, ...)`
 
-- `rich.text`: For styled text objects.
-- `rich.markdown`: Markdown parser and renderer.
-- `rich.panel`: Display bordered panels with optional titles.
-- `rich.tree`: Render hierarchical tree structures.
-- `rich.live`: For real-time updating displays.
-- `rich.console`: Core system for rendering.
-- `rich.style`: Defines text styles and colors.
-- `rich.logging`: Integrates rich formatting into Python’s logging module.
+- `append(text, style=None, ...)`
 
----
+- `stylize(style, start=None, end=None)`
 
-## Contributing
+### rich.table.Table
 
-Rich welcomes contributions from the community!
+Constructs a table with columns and rows, supporting styles and alignment.
 
-### Contribution Guidelines
+- `add_column(header, style=None, justify=None, no_wrap=False)`
 
-1. Fork the repository.
-2. Create a new branch for your feature or bugfix.
-3. Ensure code is formatted using `black` and passes all tests.
-4. Write tests for new features and fixes.
-5. Submit a pull request with clear explanations.
+- `add_row(*cells, style=None)`
 
-Refer to the [CONTRIBUTING.md](https://github.com/Textualize/rich/blob/master/CONTRIBUTING.md) for detailed guidelines.
+- `show_header(show=True)`
+
+### rich.progress.Progress
+
+Progress bar manager to display progress for tasks.
+
+- `add_task(description, total=None, ...)`
+
+- `update(task_id, advance=1)`
+
+- `start()`, `stop()`
+
+### rich.syntax.Syntax
+
+Syntax highlighter for source code, supporting multiple languages.
+
+- `Syntax(code, lexer_name, theme=None, line_numbers=False)`
+
+### rich.traceback.Traceback
+
+Enhanced traceback display with syntax highlighting.
+
+- `Traceback.from_exception(exc_type, exc_value, traceback)`
+
+### rich.prompt.Prompt
+
+Prompt user for input with styles and validation.
+
+- `Prompt.ask(question, choices=None, default=None, password=False)`
 
 ---
 
 ## License
 
-Rich is licensed under the [MIT License](https://github.com/Textualize/rich/blob/master/LICENSE).
-
----
-
-## Contact
-
-- **Project repository:** [https://github.com/Textualize/rich](https://github.com/Textualize/rich)
-- **Documentation:** [https://rich.readthedocs.io/](https://rich.readthedocs.io/)
-- **Author:** Will McGugan (Twitter: [@willmcgugan](https://twitter.com/willmcgugan))
-
-For support and discussions, check issues on GitHub or join the community on Discord.
+Rich is distributed under the MIT License. See the [LICENSE](https://github.com/Textualize/rich/blob/master/LICENSE) file for detailed license information.

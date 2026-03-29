@@ -1,168 +1,141 @@
-# lil-uri
+# lil-js/uri
 
 ## Overview
 
-`lil-uri` is a lightweight and efficient JavaScript library designed to parse, manipulate, and serialize URIs (Uniform Resource Identifiers). It provides an intuitive API to handle all components of a URI such as scheme, authority, path, query, and fragment while following the specifications outlined in RFC 3986. The library is minimalistic yet powerful, aiming to offer developers a fast and easy way to work with URIs in browser and Node.js environments.
+`lil-js/uri` is a minimalist JavaScript URI (Uniform Resource Identifier) library designed to parse, manipulate, and serialize URIs with a small, efficient footprint. This library provides essential domain concepts of the URI specification (RFC 3986) such as scheme, authority, path, query, and fragment, enabling developers to easily work with URIs by abstracting their complex components.
 
 ### Domain Concepts
 
-- **URI Components:** The distinct parts of a URI, including scheme, host, port, path, query parameters, and fragment.
-- **Parsing and Serialization:** Transforming URI strings into accessible objects and converting those objects back into valid URI strings.
-- **Query Parameters Handling:** Manipulating URI query parameters in a straightforward and flexible manner.
-- **Immutability and Mutability:** Allowing creation of URI instances with chainable methods to modify parts without affecting the original.
+- **URI Structure**: Components of a URI including scheme (protocol), authority (user info, host, port), path, query, and fragment.
+- **Parsing**: Breaking down raw URI strings into structured, accessible components.
+- **Serialization**: Composing URI components back into valid URI strings.
+- **Query Parameter Manipulation**: Adding, updating, and removing query parameters in a URI.
+- **Normalization**: Adjusting URI parts according to standard rules for consistency.
+
+The library helps bridge the complexity of handling URIs in web and network applications, focusing on simplicity and correctness.
 
 ---
 
 ## Installation
 
-### Via npm
+You can install the `uri` package using npm or yarn:
 
 ```bash
-npm install lil-uri
+npm install @lil-js/uri
 ```
 
-This works for Node.js and frontend projects using bundlers like Webpack or Rollup.
-
-### Via yarn
+or
 
 ```bash
-yarn add lil-uri
+yarn add @lil-js/uri
 ```
+
+The package works in both Node.js and browser environments.
 
 ---
 
 ## Usage and Examples
 
-### Basic URI Parsing
+### Basic Usage: Parsing a URI
 
 ```js
-import URI from "lil-uri";
+import URI from "@lil-js/uri";
 
 const uri = new URI(
-  "https://user:pass@example.com:8080/path/to/resource?foo=bar&baz=qux#fragment",
+  "https://user:pass@example.com:8080/path/to/resource?foo=bar&baz=qux#section2",
 );
 
 console.log(uri.scheme); // 'https'
-console.log(uri.authority); // 'user:pass@example.com:8080'
+console.log(uri.userinfo); // 'user:pass'
 console.log(uri.host); // 'example.com'
-console.log(uri.port); // 8080
+console.log(uri.port); // '8080'
 console.log(uri.path); // '/path/to/resource'
-console.log(uri.query.toString()); // 'foo=bar&baz=qux'
-console.log(uri.fragment); // 'fragment'
+console.log(uri.query); // 'foo=bar&baz=qux'
+console.log(uri.fragment); // 'section2'
 ```
 
-### Modifying URI Components
-
-All setters return a new instance leaving the original URI unchanged.
+### Manipulating Query Parameters
 
 ```js
-const uri = new URI("https://example.com");
+const uri = new URI("https://example.com/path?foo=bar");
 
-const updatedUri = uri
-  .withPath("/new/path")
-  .withQuery({ foo: "bar" })
-  .withFragment("section1");
+uri.addQuery("baz", "qux");
+console.log(uri.query); // 'foo=bar&baz=qux'
 
-console.log(updatedUri.toString());
-// Output: 'https://example.com/new/path?foo=bar#section1'
+uri.setQuery("foo", "newvalue");
+console.log(uri.query); // 'foo=newvalue&baz=qux'
+
+uri.removeQuery("baz");
+console.log(uri.query); // 'foo=newvalue'
 ```
 
-### Working with Query Parameters
-
-You can manipulate query parameters easily:
+### Serializing URI Back to String
 
 ```js
-let uri = new URI("https://example.com?foo=1&bar=2");
+const uri = new URI("http://example.com");
+uri.path = "/newpath";
+uri.fragment = "top";
 
-uri = uri.withQuery(uri.query.set("bar", "3").set("baz", "4"));
-
-console.log(uri.toString());
-// 'https://example.com?foo=1&bar=3&baz=4'
+console.log(uri.toString()); // 'http://example.com/newpath#top'
 ```
 
-### Serialization
-
-Convert the URI object back to a string:
+### Normalizing a URI
 
 ```js
-const uri = new URI("https://example.com/path?q=1#frag");
-console.log(uri.toString()); // 'https://example.com/path?q=1#frag'
+const uri = new URI("HTTP://Example.Com:80/%7Euser");
+uri.normalize();
+
+console.log(uri.toString()); // 'http://example.com/~user'
 ```
 
 ---
 
 ## API Reference
 
-### `new URI(uriString)`
+### `URI` class
 
-Creates a new URI instance by parsing the given URI string.
+The central class for parsing, manipulating, and serializing URIs.
 
-- **Parameters:**
-  - `uriString` (string): The URI string to parse.
-- **Returns:** A URI object representing the parsed URI.
+#### Constructor
 
----
+`new URI(uriString: string)`
 
-### Properties of URI instance
+- Parses the input URI string and initializes component properties.
 
-- `scheme` (string): The URI scheme (e.g., `http`, `https`).
-- `authority` (string): The authority component, including user info, host, and port.
-- `userInfo` (string|null): User credentials (`user:pass`), if present.
+#### Properties
+
+- `scheme` (string): The protocol scheme (e.g., 'http', 'https').
+- `userinfo` (string): User information (e.g., 'user:pass').
 - `host` (string): Hostname or IP address.
-- `port` (number|null): The port number, if specified.
-- `path` (string): The path component of the URI.
-- `query` (QueryObject): An object to access and manipulate query parameters.
-- `fragment` (string|null): The fragment identifier after the `#`.
+- `port` (string): Port number as a string.
+- `path` (string): Path component of the URI.
+- `query` (string): Raw query string (key-value pairs as a string).
+- `fragment` (string): Fragment identifier (after '#').
 
----
+#### Methods
 
-### Methods of URI instance
+- `addQuery(key: string, value: string): void`
 
-- `toString()`: Returns the full URI string.
-- `withScheme(scheme)`: Returns a new URI with the scheme replaced.
-- `withAuthority(authority)`: Returns a new URI with the authority replaced.
-- `withUserInfo(userInfo)`: Returns a new URI with the user info replaced.
-- `withHost(host)`: Returns a new URI with the host replaced.
-- `withPort(port)`: Returns a new URI with the port replaced.
-- `withPath(path)`: Returns a new URI with the path replaced.
-- `withQuery(query)`: Returns a new URI with the query replaced. `query` can be a string, an object, or a QueryObject.
-- `withFragment(fragment)`: Returns a new URI with the fragment replaced.
+  Adds a new query parameter without affecting existing parameters with the same key.
 
----
+- `setQuery(key: string, value: string): void`
 
-### QueryObject API
+  Sets or updates the value of the specified query parameter.
 
-The `query` property is an instance of a query parameters handler supporting:
+- `removeQuery(key: string): void`
 
-- `get(param)`: Gets the value of a query parameter.
-- `set(param, value)`: Sets a query parameter and returns a new QueryObject.
-- `delete(param)`: Deletes a query parameter and returns a new QueryObject.
-- `has(param)`: Returns `true` if the parameter exists.
-- `toString()`: Serializes the query parameters to a URI encoded string.
+  Removes all occurrences of the specified query parameter.
 
----
+- `normalize(): void`
 
-## Contributing
+  Normalizes the URI components to conform with standard URI rules (e.g., lowercasing scheme and host, decoding percent-encoded unreserved characters).
 
-Contributions are welcome! To contribute:
+- `toString(): string`
 
-1. Fork the repository.
-2. Create a feature branch.
-3. Submit pull requests with clear descriptions.
-4. Write tests for new features or bug fixes.
-5. Follow the existing code style.
-
-Please report issues and suggest features via the GitHub repository's Issues tab.
+  Serializes the URI components back into a valid URI string.
 
 ---
 
 ## License
 
-`lil-uri` is licensed under the MIT License. See the LICENSE file in the repository for details.
-
----
-
-## Contact
-
-- GitHub: [https://github.com/lil-js/uri](https://github.com/lil-js/uri)
-- Issues: Use the GitHub Issues page for bug reports and feature requests.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/lil-js/uri/blob/main/LICENSE) file for details.

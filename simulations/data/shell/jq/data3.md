@@ -2,58 +2,63 @@
 
 ## Overview
 
-`jq` is a powerful, flexible, and lightweight command-line JSON processor. It allows developers and system administrators to parse, filter, transform, and output JSON data easily from shell scripts or command line operations. Modeled after the syntax of sed and awk but designed specifically for JSON, `jq` provides a user-friendly way to handle JSON data using a simple but expressive domain-specific language.
+`jq` is a powerful and flexible command-line JSON processor. It allows users to slice, filter, map, and transform structured JSON data with a concise and expressive functional programming language designed specifically for JSON. Using `jq`, developers and data analysts can parse, extract, and manipulate JSON data efficiently in a way similar to how `sed`, `awk`, and `grep` operate on text.
 
 ### Domain Concepts
 
-- **JSON Data Structures**: `jq` operates on JSON data, including objects, arrays, strings, numbers, booleans, and null.
-- **Filters**: Core building blocks in `jq` that process and transform JSON inputs into desired outputs.
-- **Pipelines & Composition**: Filters can be combined and chained to create complex transformations.
-- **Programmatic Querying**: A rich language enables selecting, updating, reducing, and producing new JSON data.
-- **Streaming Support**: Process large JSON inputs incrementally without loading them entirely in memory.
-- **Built-in Functions and Operators**: Provide arithmetic operations, string manipulation, conditionals, and more.
+- **JSON Data:** Textual format for structured data, composed of objects, arrays, strings, numbers, booleans, and nulls.
+- **Filters:** Queries expressed in the `jq` language to transform and extract data from JSON.
+- **Pipelines and Composition:** Combining filters to build complex queries step-by-step.
+- **Streaming Processing:** Handling large JSON data efficiently with minimal memory usage.
+- **Functions and Operators:** Built-in and user-defined functions for data transformations.
+- **Variables and Assignments:** Managing data flow and intermediate states within queries.
+- **Modules:** Encapsulated reusable code segments for extending functionality.
 
-`jq` is widely used for inspecting logs, configuring infrastructure as code, data extraction, and integration workflows.
+The main goal of `jq` is to provide a lightweight tool and language for transforming JSON data on the command line or in scripts, making it an essential tool for data processing pipelines, system administration, and rapid JSON data interrogation.
 
 ---
 
 ## Installation
 
-### Prerequisites
+`jq` is widely supported on multiple platforms including Linux, macOS, and Windows.
 
-- Works on Unix/Linux, macOS, and Windows platforms.
-- Requires a terminal or command prompt to run.
+### On Linux
 
-### Installation Methods
-
-#### Linux (using package managers):
+Use your system's package manager:
 
 ```bash
-sudo apt-get install jq       # Debian/Ubuntu
-sudo yum install jq           # RHEL/CentOS/Fedora
+# Debian/Ubuntu
+sudo apt-get install jq
+
+# Fedora
+sudo dnf install jq
+
+# Arch Linux
+sudo pacman -S jq
 ```
 
-#### macOS (using Homebrew):
+### On macOS
+
+Install via Homebrew:
 
 ```bash
 brew install jq
 ```
 
-#### Windows
+### On Windows
 
-- Download precompiled binaries from https://stedolan.github.io/jq/download/
-- Alternatively, install via Chocolatey package manager:
+Download precompiled binaries from the official [jq releases](https://github.com/stedolan/jq/releases) page, or install via [chocolatey](https://chocolatey.org/packages/jq):
 
 ```powershell
 choco install jq
 ```
 
-### Build from Source
+### From Source
 
-Clone the repository and build manually:
+Clone the repository and build from source:
 
 ```bash
-git clone https://github.com/jqlang/jq.git
+git clone https://github.com/stedolan/jq.git
 cd jq
 autoreconf -i
 ./configure
@@ -65,157 +70,117 @@ sudo make install
 
 ## Usage and Examples
 
-`jq` reads JSON from standard input and outputs results based on filter expressions.
+`jq` is primarily used by passing JSON input through standard input (`stdin`) or from a file, combined with filter expressions.
 
-### Basic Syntax
+### Basic Usage
 
 ```bash
-jq <filter> <file>
+jq '<filter>' <input-file>
 ```
 
-If no file is specified, JSON is read from standard input.
+Or with input piped from another command:
 
-### Example 1: Pretty-print JSON
+```bash
+cat file.json | jq '<filter>'
+```
+
+### Examples
+
+1. **Pretty-Print JSON**
 
 ```bash
 jq '.' data.json
 ```
 
-Outputs formatted JSON for easy reading.
+Outputs formatted nicely indented JSON.
 
-### Example 2: Extract a field from an object
+2. **Extract Keys or Values**
 
-Given JSON:
-
-```json
-{
-  "name": "Alice",
-  "age": 30,
-  "city": "Wonderland"
-}
-```
-
-Command:
+Extract the value of key `name`:
 
 ```bash
 jq '.name' data.json
 ```
 
-Output:
+3. **Filter Arrays**
 
-```json
-"Alice"
-```
-
-### Example 3: Filtering array elements
-
-JSON:
-
-```json
-[
-  { "name": "Alice", "age": 30 },
-  { "name": "Bob", "age": 25 },
-  { "name": "Carol", "age": 27 }
-]
-```
-
-Filter:
+Select array elements where `age` > 30:
 
 ```bash
-jq '.[] | select(.age > 26)' data.json
+jq '.[] | select(.age > 30)' data.json
 ```
 
-Output:
+4. **Map and Transform**
 
-```json
-{
-  "name": "Alice",
-  "age": 30
-}
-{
-  "name": "Carol",
-  "age": 27
-}
-```
-
-### Example 4: Using variables and functions
+Add a new field `isAdult` based on `age`:
 
 ```bash
-jq --arg city "Wonderland" '.city == $city' data.json
+jq '.[] | .isAdult = (.age >= 18)' data.json
 ```
 
-Returns `true` if the city matches.
+5. **Combine and Compose Filters**
+
+Get the names of adults older than 18:
+
+```bash
+jq '.[] | select(.age >= 18) | .name' data.json
+```
+
+6. **Using Variables**
+
+Assign and reuse variables within filters:
+
+```bash
+jq --arg city "London" '.[] | select(.city == $city)' data.json
+```
+
+### Best Practices
+
+- Quote filters properly to avoid shell interpolation issues.
+- Use streaming options (`--stream`) on large files.
+- Combine filters to create composable and readable queries.
+- Use modules and custom functions for reusable queries.
 
 ---
 
 ## API Reference
 
-The core of `jq` is its Filter language, which can be used interactively or embedded.
+While `jq` is a command-line tool, it provides a rich built-in expression language and functions. Additionally, it offers a C API for embedding `jq` functionality into other programs.
 
-### Main Filters
+### Command-Line Options (Execution Facts)
 
-- `.` — Identity operator; returns input as is.
-- `.key` — Gets the value of "key" in a JSON object.
-- `.[]` — Iterates over elements of an array.
-- `select(condition)` — Filters elements based on condition.
-- `map(f)` — Applies filter `f` to each element of an array.
-- `reduce stream as $var (...)` — Reduces input stream to a summary value.
-- `length` — Returns length of string or array.
-- `sort`, `sort_by(f)` — Sort arrays.
-- `if`, `then`, `else`, `end` — Conditional expressions.
-- `try`, `catch` — Error handling inside filters.
+- `-c`: Compact output (no pretty printing).
+- `-r`: Raw output (output strings without JSON quotes).
+- `-s`: Slurp. Read all inputs into a single array.
+- `-n`: Don't read any input; start with `null`.
+- `--stream`: Parse input in streaming fashion (produces arrays of path and leaf values).
+- `--arg name value`: Set a variable accessible in the filter.
+- `--argjson name value`: Set a variable from a JSON value.
 
-### Built-in Functions
+### Core Filter Syntax and Functions
 
-- String operations: `startswith`, `endswith`, `match`, `split`, `capture`.
-- Arithmetic: `+`, `-`, `*`, `/`, `%`, `//` (alternative)
-- Logical: `and`, `or`, `not`
-- Type tests: `type`, `has(key)`, `inside`
-- JSON construction: `tojson`, `fromjson`
+- `.foo` - Select field `foo`.
+- `.[]` - Iterate over array elements.
+- `select(condition)` - Filters inputs by condition.
+- `map(expression)` - Transforms arrays.
+- `length` - Returns length of array/object/string.
+- Arithmetic: `+`, `-`, `*`, `/`, `%`.
+- Comparison: `==`, `!=`, `<`, `>`, `<=`, `>=`.
+- Logical: `and`, `or`, `not`.
+- String functions: `startswith`, `endswith`, `contains`.
+- Arrays and objects construction: `[ ... ]`, `{ key: value }`.
+- Recursive descent: `..`.
+- Functions: `keys`, `has`, `type`, `tonumber`, `tostring`, `explode`, `implode`.
 
-### Command-Line Options
+### C API (General Facts)
 
-- `-c`, `--compact-output`: Output JSON in compact form.
-- `-r`, `--raw-output`: Output raw strings, not JSON encoded.
-- `-s`, `--slurp`: Read entire input into an array.
-- `-f <file>`: Read filter from a file.
-- `--arg name value`: Pass string variable.
-- `--argjson name value`: Pass JSON variable.
-- `--stream`: Parse input in streaming fashion.
-
-### Exit Codes
-
-- `0` on success.
-- Non-zero on errors (failed parse, runtime errors).
-
----
-
-## Contributing
-
-`jq` welcomes contributions that improve functionality, documentation, and test coverage.
-
-To contribute:
-
-1. Fork the repository on GitHub.
-2. Create a feature branch.
-3. Implement and test your changes.
-4. Submit a pull request with clear explanations and tests.
-
-Refer to the official contribution guidelines on the GitHub repository.
+- Embeds the `jq` engine to run filters from within C programs.
+- Use `jq_init`, `jq_compile`, `jq_start`, and `jq_next` to process JSON values.
+- Parse JSON inputs to `jv` values with `jv_parse`.
+- Retrieve results as `jv` types for further manipulation.
 
 ---
 
 ## License
 
-`jq` is licensed under the MIT License. See [LICENSE](https://github.com/jqlang/jq/blob/master/LICENSE) for details.
-
----
-
-## Contact
-
-- Official Repository: https://github.com/jqlang/jq
-- Website: https://stedolan.github.io/jq/
-- Issues: https://github.com/jqlang/jq/issues
-- Maintainer: Stephen Dolan and community contributors
-
-For questions or support, use the GitHub issue tracker or community forums.
+`jq` is open source software licensed under the MIT License. For full license details, see the [LICENSE](https://github.com/stedolan/jq/blob/master/LICENSE) file in the repository.

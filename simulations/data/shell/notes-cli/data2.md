@@ -2,223 +2,147 @@
 
 ## Overview
 
-`notes-cli` is a simple and flexible command-line note-taking tool designed for quickly managing plain text notes. It allows users to create, organize, and retrieve notes efficiently from the terminal, without the overhead of complex note-taking applications. The tool focuses on minimalism and productivity, using a directory of text files as its note repository.
+`notes-cli` is a command-line tool designed for managing plain text notes efficiently directly from the terminal. It allows users to quickly create, search, list, and open notes organized in a simple directory structure. The tool emphasizes minimalism, speed, and ease of use by leveraging standard text files and powerful command-line utilities, making it suitable for users who prefer a keyboard-driven workflow and plain text note-taking.
 
 ### Domain Concepts
 
-- **Notes Repository**: A directory containing individual plain-text note files.
-- **Note Files**: Text files representing individual notes identified by unique filenames.
-- **Tagging and Searching**: Notes can include tags or keywords for quick searching and filtering.
-- **Command-line Interface (CLI)**: User interacts with `notes-cli` through terminal commands to perform note operations.
-
-The tool models the domain of personal note management with a focus on fast access and simple text storage.
+- **Notes Directory**: A folder where all notes are stored as individual text files.
+- **Note Files**: Plain text files representing individual notes, typically with `.txt` or user-defined extensions.
+- **Note Metadata**: Basic metadata such as creation time and modification time associated with each note file.
+- **Search & Filter**: Mechanisms to quickly find notes by keywords or patterns.
+- **Note Actions**: Creating new notes, listing notes, opening existing notes in an editor, and deleting notes.
 
 ---
 
 ## Installation
 
-`notes-cli` is implemented in Rust and distributed as a binary.
-
 ### Prerequisites
 
-- Rust toolchain for building from source (optional).
-- Or download precompiled binaries or install via package managers if available.
+- Go programming environment (version 1.16 or higher recommended).
 
-### Installing from source
+### Installation from source
 
-1. Clone the repository:
+Clone the repository and build the binary:
 
 ```bash
 git clone https://github.com/rhysd/notes-cli.git
 cd notes-cli
+go build
 ```
 
-2. Build the binary using Cargo:
+This produces an executable `notes-cli` in the current directory.
 
-```bash
-cargo build --release
-```
+### Installing using prebuilt binaries
 
-3. The compiled binary will be in `target/release/notes`.
-
-### Installing via Homebrew (macOS)
-
-```bash
-brew install rhysd/tap/notes
-```
-
-### Usage requires having a directory to store notes:
-
-Create a directory to use as your notes repository:
-
-```bash
-mkdir ~/notes
-```
+Prebuilt binaries for various platforms may be available under the [releases](https://github.com/rhysd/notes-cli/releases) section on GitHub. Download and place the binary in your system PATH.
 
 ---
 
 ## Usage and Examples
 
-`notes-cli` provides various commands to manage notes. Below are some common usage examples.
+Once installed, `notes-cli` can be used via the command line to manipulate notes.
 
-### Initialize a notes repository
+### Setting Notes Directory
 
-Set the environment variable `NOTES_DIR` to point to your notes directory:
+By default, notes are stored in the directory specified by the environment variable `NOTES_DIR`. If not set, it uses `~/notes`.
 
-```bash
-export NOTES_DIR=~/notes
-```
-
-or specify the directory with the `-d` option:
+Example to set environment variable:
 
 ```bash
-notes -d ~/notes <command> ...
+export NOTES_DIR=~/my_notes
 ```
 
-### Create a new note
+### Creating a New Note
+
+Create a new note with a title. This opens the note in the configured editor (defaults to `$EDITOR` or `vi`):
 
 ```bash
-notes new "Todo for project"
+notes-cli new "My First Note"
 ```
 
-This creates a new note file with a timestamp-based filename containing the note text "Todo for project" opened for editing.
+This creates a file named like the note title, e.g., `My First Note.txt` in the notes directory and opens it for editing.
 
-### Edit an existing note
+### Listing Notes
 
-To edit a note by its filename:
+List all note titles:
 
 ```bash
-notes edit 20220414123045.txt
+notes-cli list
 ```
 
-This opens the note file in the default text editor.
+Output Example:
 
-### List all notes
+```
+My First Note.txt
+Meeting Notes.txt
+Project Ideas.txt
+```
+
+### Searching Notes
+
+Search note contents for a keyword, displaying matching note names:
 
 ```bash
-notes list
+notes-cli search keyword
 ```
 
-This lists all note filenames with their creation dates.
+### Opening a Note
 
-### Search notes by keyword or tag
+Open an existing note by title in the editor:
 
 ```bash
-notes search "project"
+notes-cli open "Meeting Notes"
 ```
 
-Shows notes containing the keyword "project" in their content.
+If multiple matches are found, it prompts to select.
 
-### Delete a note
+### Deleting a Note
+
+Remove a note by title:
 
 ```bash
-notes delete 20220414123045.txt
+notes-cli delete "Project Ideas"
 ```
-
-Deletes the specified note file.
-
-### Show note content
-
-```bash
-notes show 20220414123045.txt
-```
-
-Outputs the content of the note to the terminal.
 
 ---
 
 ## API Reference
 
-The primary interface to `notes-cli` is via its CLI commands. Below are the main commands (subcommands) with their options and usage.
+The tool mainly works through CLI commands with the following primary commands:
 
-### `notes new [title]`
+### `new <title>`
 
-Create a new note with an optional title. Opens the editor for entering note content.
+- Creates a new note with the specified `<title>`.
+- Opens the note with the default editor.
+- If a note with the same name exists, the user is prompted about overwrite.
 
-- `title` (string, optional): Title or first line of the note.
+### `list`
 
-Returns: Newly created note filename.
+- Lists all note files in the notes directory with their filenames.
 
----
+### `search <keyword>`
 
-### `notes edit <filename>`
+- Searches all notes for the given keyword.
+- Outputs note files containing the keyword.
 
-Edit an existing note by filename.
+### `open <title>`
 
-- `filename` (string): Name of the note file to edit.
+- Opens the note matching the `<title>` for editing.
+- If multiple matches, prompts selection.
+- Uses `$EDITOR` environment variable or defaults to `vi`.
 
-Returns: Opens editor and saves changes.
+### `delete <title>`
 
----
+- Deletes the note matching the `<title>`.
+- Asks for confirmation by default.
 
-### `notes list`
+### Common Options
 
-List all notes with metadata like date and title (if any).
-
-Returns: List of note files.
-
----
-
-### `notes search <query>`
-
-Search for notes containing the query string.
-
-- `query` (string): Keyword or tag to search for.
-
-Returns: List of matching note filenames.
-
----
-
-### `notes show <filename>`
-
-Show the content of a specific note.
-
-- `filename` (string): Note filename.
-
-Returns: Note content printed to console.
-
----
-
-### `notes delete <filename>`
-
-Remove a note file.
-
-- `filename` (string): Note filename.
-
-Returns: Deletes the specified note.
-
----
-
-### Global Options
-
-- `-d`, `--dir <path>`: Specify the notes directory if not using `NOTES_DIR` environment variable.
-- `-h`, `--help`: Show usage information.
-- `-v`, `--version`: Show version information.
-
----
-
-## Contributing
-
-Contributions to `notes-cli` are welcome! To contribute:
-
-1. Fork the GitHub repository.
-2. Create a feature branch or issue fix branch.
-3. Submit a pull request with clear descriptions.
-4. Follow coding and commit message conventions.
-5. Include tests and documentation updates if applicable.
-
-Please report bugs or feature requests via GitHub issues.
+- `-h, --help`: Show help information.
+- `--version`: Show current version of notes-cli.
 
 ---
 
 ## License
 
 `notes-cli` is licensed under the MIT License. See the [LICENSE](https://github.com/rhysd/notes-cli/blob/master/LICENSE) file for details.
-
----
-
-## Contact
-
-- Repository: [https://github.com/rhysd/notes-cli](https://github.com/rhysd/notes-cli)
-- Issues: Use GitHub Issues on the repository page for bug reports and feature requests.
-- Author: Rhysd (https://github.com/rhysd)
