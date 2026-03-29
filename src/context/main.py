@@ -168,12 +168,11 @@ Input data will be provided after the role and prompt structure.
 ## Output Format
 ### README Structure
 ```.md
-
-# Project Title
+## Project Title
 The name of the project or software tool.
 
 ## Overview
-A description of the project or software tool’s purpose, including its main goal and functionality.  
+A description of the project or software tool's purpose, including its main goal and functionality.
 Focus on the **Domain Concepts** of the tool in this section.
 
 ## Installation
@@ -188,16 +187,9 @@ Focus on **Usage Patterns**, explaining both why and how to use the tool.
 List the main functions, classes, or endpoints, including their purpose and parameters.  
 Focus on **Execution Facts** in this section.
 
-## Contributing
-Guidelines for contributing to the project, including reporting issues, submitting pull requests, and contributing code.  
-Explain how others can extend or improve the project.
-
 ## License
 The license under which the project is distributed.  
 Check the `LICENSE` file, if it exists, to determine which license applies.
-
-## Contact
-Contact information for the project owner or maintainers, such as email, website, or social media profiles.
 ```
 
 ## Examples
