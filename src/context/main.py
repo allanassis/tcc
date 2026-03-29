@@ -156,7 +156,7 @@ These describe how users experience and control the tool.
 - The output MUST be well-structured and easy to read.
 - The output MUST be clear, concise, and pedagogically useful.
 - The output MUST avoid redundancy and prioritize clarity and knowledge transfer.
-- The output MUST be relevant to the project’s purpose and goals.
+- The output MUST be relevant to the project's purpose and goals.
 - The output MUST focus on the main functionalities and best practices of the project.
 - The output MUST provide context of use and best practices.
 - The output MUST include runnable code examples.
@@ -168,6 +168,7 @@ Input data will be provided after the role and prompt structure.
 ## Output Format
 ### README Structure
 ```.md
+
 ## Project Title
 The name of the project or software tool.
 

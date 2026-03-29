@@ -121,33 +121,9 @@ generate(umlText, { path: '.', outputName: 'diagram.svg', type: 'svg' })
 
 ---
 
-## Contributing
-
-Contributions to `node-uml` are welcome! To contribute improvements, fix bugs, or add features:
-
-1. Fork the repository on GitHub.
-2. Create a new branch for your feature or bugfix (`git checkout -b feature-name`).
-3. Make your changes and add tests if applicable.
-4. Commit your work (`git commit -m 'Add feature'`).
-5. Push to your fork (`git push origin feature-name`).
-6. Open a Pull Request describing your changes.
-
-Please ensure your code follows the existing style and that you test your changes before submitting.
-
----
-
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](https://github.com/allanassis/node-uml/blob/master/LICENSE) file for details.
-
----
-
-## Contact
-
-- **Author:** Allan Assis
-- **Repository:** [https://github.com/allanassis/node-uml](https://github.com/allanassis/node-uml)
-- **Issues and feature requests:** Use the [GitHub Issues](https://github.com/allanassis/node-uml/issues) page to report problems or suggest enhancements.
-
 ```
 
 

@@ -67,22 +67,9 @@ Expected output: The generated API documentation printed to standard output.
 - `--local`: (Optional) Indicates if the package path is local (`True` or `False`). Default is `False`.
 - `--model`: (Optional) LLM model to use for documentation generation. Choices are `gpt` (default), `gemini`, `bedrock`.
 
-## Contributing
-
-Contributions are welcome to enhance functionality, add support for more LLM providers, improve error handling, or extend CLI options. Please follow the repository's contribution guidelines:
-
-- Fork the repository.
-- Create a dedicated feature branch.
-- Submit pull requests with clear descriptions of your changes.
-- Include tests where applicable.
-
 ## License
 
 This project is licensed under the terms specified in the repository's LICENSE file.
-
-## Contact
-
-For questions, issues, or contributions, please contact the maintainers via the repository's issue tracker or email listed in the project metadata.
 ```
 
 

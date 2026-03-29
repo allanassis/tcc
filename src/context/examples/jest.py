@@ -190,44 +190,9 @@ Creates a new mock function.
 - `collectCoverage`: Collect code coverage information.
 - `coverageDirectory`: Output directory for coverage reports.
 
----
-
-## Contributing
-
-Jest is open source and welcomes contributions!
-
-### How to contribute
-
-1. Fork the repository on GitHub.
-2. Create a feature branch or bugfix branch.
-3. Write tests for your changes.
-4. Follow coding style guidelines.
-5. Submit a pull request with a clear description.
-
-### Development setup
-
-- Clone the repo
-- Run `yarn install` to install dependencies.
-- Use `yarn test` to run tests.
-- Use `yarn build` to build the system.
-
-Refer to the [CONTRIBUTING.md](https://github.com/facebook/jest/blob/main/CONTRIBUTING.md) file in the repo for detailed instructions.
-
----
-
 ## License
 
 Jest is licensed under the [MIT License](https://github.com/facebook/jest/blob/main/LICENSE).
-
----
-
-## Contact
-
-- Official repo: [https://github.com/facebook/jest](https://github.com/facebook/jest)
-- Twitter: [@jestjs](https://twitter.com/jestjs)
-- Community: [https://jestjs.io/community](https://jestjs.io/community)
-
-For questions or discussion, visit the Jest Discord or GitHub Issues.
 ```
 
 
