@@ -3,7 +3,6 @@ import logging
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from dotenv import load_dotenv
-from agno.agent import Agent
 
 from src.llm_manager import LLMManager
 
@@ -22,45 +21,23 @@ llm_manager = LLMManager()
 def index():
     return render_template('index.html')
 
-@app.route('/atorak/chat/<model>', methods=['POST'])
-def atorak_chat(model):
+@app.route('/generate', methods=['POST'])
+def generate_readme():
     try:
         data = request.json
-        prompt = data.get('prompt', '')
-        
-        logger.info(f"ATORAK chat request for model: {model}")
-        
-        response_content = llm_manager.run_prompt(prompt, model)
-        
-        logger.info(f"ATORAK response generated successfully")
-        return jsonify({'response': response_content, 'model': model, 'type': 'atorak'})
-        
-    except Exception as e:
-        logger.error(f"Error in ATORAK chat: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+        url = data.get('url', '')
+        model = data.get('model', 'gpt')
 
-@app.route('/raw/chat/<model>', methods=['POST'])
-def raw_chat(model):
-    try:
-        data = request.json
-        prompt = data.get('prompt', '')
-        
-        logger.info(f"Raw chat request for model: {model}")
-        
-        # Create basic agent without ATORAK context
-        provider = llm_manager.get_provider(model)
-        agent = Agent(
-            name="General Assistant",
-            instructions="You are a helpful AI assistant.",
-            model=provider
-        )
-        
-        # Generate response
-        response = agent.run(prompt)
-        
-        logger.info(f"Raw response generated successfully {response.to_dict()}")
-        return jsonify({'response': response.content, 'model': model, 'type': 'raw'})
-        
+        if not url:
+            return jsonify({'error': 'GitHub URL is required'}), 400
+
+        logger.info(f"Generating README for: {url} using model: {model}")
+
+        content = llm_manager.generate_doc(url, False, model)
+
+        logger.info("README generated successfully")
+        return jsonify({'response': content, 'model': model})
+
     except Exception as e:
-        logger.error(f"Error in raw chat: {str(e)}")
+        logger.error(f"Error generating README: {str(e)}")
         return jsonify({'error': str(e)}), 500
