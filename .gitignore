@@ -1,6 +1,7 @@
 # Environment variables
 .env
-
+ .venv/
+ 
 # Python
 __pycache__/
 *.py[cod]
@@ -41,3 +42,11 @@ logs/
 # OS
 .DS_Store
 Thumbs.db
+
+# Elastic Beanstalk
+.elasticbeanstalk/
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
