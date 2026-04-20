@@ -254,9 +254,9 @@
                 </div>
                 <select id="model-select">
                     <option value="gpt">GPT</option>
-                    <option value="gemini">Gemini</option>
+                    <option value="gemini" disabled>Gemini (unavailable)</option>
                 </select>
-                <button class="btn" id="generate-btn" onclick="generate()">Generate</button>
+                <button class="btn" id="generate-btn" onclick="generate()" disabled>Generate</button>
             </div>
         </div>
 
@@ -329,8 +329,12 @@
             });
         }
 
+        if (new URLSearchParams(window.location.search).has('enabled')) {
+            document.getElementById('generate-btn').disabled = false;
+        }
+
         document.getElementById('url-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') generate();
+            if (e.key === 'Enter' && !document.getElementById('generate-btn').disabled) generate();
         });
     </script>
 </body>
