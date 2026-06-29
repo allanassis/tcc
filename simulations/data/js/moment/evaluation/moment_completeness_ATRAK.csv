@@ -1,0 +1,5 @@
+project,readme,domain_concepts,execution_facts,usage_patterns,atrak_score
+moment,data1.md,1,1,1,100
+moment,data2.md,1,1,1,100
+moment,data3.md,1,1,1,100
+moment,average,1.0,1.0,1.0,100

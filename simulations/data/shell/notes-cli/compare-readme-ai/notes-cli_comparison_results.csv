@@ -1,0 +1,4 @@
+project,readme,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score
+notes-cli,best_paper (data1.md),100,40,20,20,20,100,50.00
+notes-cli,worst_paper (data3.md),100,40,0,40,12.5,100,48.75
+notes-cli,readmeai_generated,100,0,40,0,0,0,23.33

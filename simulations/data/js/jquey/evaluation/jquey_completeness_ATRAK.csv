@@ -1,0 +1,5 @@
+project,readme,domain_concepts,execution_facts,usage_patterns,atrak_score
+jquey,data1.md,1,1,1,100
+jquey,data2.md,1,1,1,100
+jquey,data3.md,1,1,1,100
+jquey,average,1.0,1.0,1.0,100

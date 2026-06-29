@@ -1,0 +1,4 @@
+project,readme,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score
+numpy,best_paper (data1.md),100,100,80,80,100,100,93.33
+numpy,worst_paper (data3.md),100,100,60,80,100,100,90.00
+numpy,readmeai_generated,100,0,40,0,0,0,23.33
