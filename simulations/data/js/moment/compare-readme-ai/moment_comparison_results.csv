@@ -1,4 +1,0 @@
-project,readme,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score
-moment,best_paper (data1.md),100,100,100,100,100,100,100.00
-moment,worst_paper (data1.md),100,100,100,100,100,100,100.00
-moment,readmeai_generated,100,0,40,0,0,0,23.33

@@ -1,4 +1,0 @@
-project,readme,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score
-scikit-learn,best_paper (data1.md),100,100,60,100,100,100,93.33
-scikit-learn,worst_paper (data3.md),100,100,40,100,71.43,100,85.24
-scikit-learn,readmeai_generated,100,0,40,0,0,0,23.33

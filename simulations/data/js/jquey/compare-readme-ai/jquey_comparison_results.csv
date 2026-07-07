@@ -1,4 +1,0 @@
-project,readme,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score
-jquey,best_paper (data1.md),100,100,100,100,100,100,100.00
-jquey,worst_paper (data2.md),100,100,100,100,95.45,100,99.24
-jquey,readmeai_generated,100,0,40,0,0,0,23.33
