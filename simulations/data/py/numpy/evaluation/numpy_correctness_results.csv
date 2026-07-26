@@ -1,0 +1,5 @@
+project,readme,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score
+numpy,data1.md,100.00,100.00,80.00,83.33,100.00,100.00,93.89
+numpy,data2.md,100.00,100.00,80.00,80.00,100.00,100.00,93.33
+numpy,data3.md,100.00,100.00,20.00,80.00,100.00,100.00,83.33
+numpy,average,100.00,100.00,60.00,81.11,100.00,100.00,90.18

@@ -106,13 +106,17 @@ C_R = (T + O + I + U + A + L) / 6
 
 ### Installation (I) — 5 rules (executed)
 
-Execute all installation commands exactly as documented, in an isolated
-environment.
+Execute **all** documented installation paths (package manager, source build,
+alternative methods) exactly as documented, in an isolated environment — not
+only the primary one. A rule violated by any documented path fails.
 
 1. All required dependencies are explicitly declared.
 2. The installation commands execute without modification.
 3. The installation produces no unresolved dependency errors.
-4. The documented environment requirements are correct.
+4. The documented environment requirements are correct — validate version
+   claims against the package's authoritative metadata (e.g.,
+   `Requires-Python`, `engines`, minimum runtime declared by the project),
+   not against plausibility.
 5. The installation process produces the expected executable artifact.
 
 `I = (Σ V_i / 5) × 100`
@@ -160,21 +164,31 @@ repository source code and official API documentation. An element passes
 ## Dimension 3 — Adherence to the Theory of Robust API Knowledge (ATRAK)
 
 Check the binary presence of the three Knowledge Elements
-[Thayer et al. 2021]. This dimension assesses **presence, not correctness**.
+[Thayer et al. 2021]. This dimension assesses **presence, not correctness**:
+content that is factually wrong or hallucinated still counts as present —
+factual accuracy is already penalized by the correctness dimension and must
+not be double-counted here.
 
 - **K_D — Domain Concepts:** the fundamental entities and abstractions of the
   problem domain, with the conceptual vocabulary needed to understand what the
   software represents.
-- **K_E — Execution Facts:** verifiable facts about runtime behavior — inputs,
-  outputs, return types, dependencies, configuration, installation,
-  constraints.
-- **K_U — Usage Patterns:** purposeful demonstrations of how the software is
-  applied — code examples, tutorials, what/how/why of use.
+- **K_E — Execution Facts:** facts about runtime behavior — inputs, outputs,
+  return types, dependencies, configuration, installation, constraints.
+- **K_U — Usage Patterns:** demonstrations of how the software is applied —
+  code examples, tutorials, what/how/why of use.
 
-**"Listed" is not "communicated":** a feature bullet list or table that only
-names concepts, without defining them or teaching the conceptual vocabulary,
-does **not** satisfy K_D. Broken or placeholder commands do **not** satisfy
-K_E. Examples that do not show real API usage do **not** satisfy K_U.
+An element is **absent (0)** only when the README provides no evaluable
+content for it:
+
+- the carrying section is empty or missing;
+- the only candidate content is a bare name-only list (names without any
+  definition or explanation — a features table that only names concepts does
+  not satisfy K_D);
+- the only candidate content consists of unresolved template placeholders
+  (e.g., `{entrypoint}`, `INSERT-COMMAND-HERE`).
+
+Otherwise the element is **present (1)** — even if the described concepts,
+commands, or examples are incorrect for the actual project.
 
 `K = (K_D + K_E + K_U) / 3 × 100` per README.
 

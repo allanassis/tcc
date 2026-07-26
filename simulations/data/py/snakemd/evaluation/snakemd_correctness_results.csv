@@ -1,0 +1,5 @@
+project,readme,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score
+SnakeMD,data1.md,100.00,0.00,60.00,0.00,0.00,100.00,43.33
+SnakeMD,data2.md,100.00,0.00,0.00,0.00,0.00,100.00,33.33
+SnakeMD,data3.md,100.00,0.00,0.00,0.00,0.00,100.00,33.33
+SnakeMD,average,100.00,0.00,20.00,0.00,0.00,100.00,36.67
