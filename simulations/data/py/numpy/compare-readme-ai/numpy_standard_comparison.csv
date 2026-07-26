@@ -1,0 +1,5 @@
+project,tool,aggregation,completeness_score,atrak_score,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score,winner_correctness
+numpy,README-Gen,mean,100.0,100.0,100.0,100.0,60.0,81.11,100.0,100.0,90.18,README-Gen
+numpy,README-Gen,best,100.0,100.0,100.0,100.0,80.0,83.33,100.0,100.0,93.89,
+numpy,README-Gen,worst,100.0,100.0,100.0,100.0,20.0,80.0,100.0,100.0,83.33,
+numpy,README-AI,single,71.43,33.33,100.0,100.0,0.0,0.0,0.0,33.33,38.89,README-Gen

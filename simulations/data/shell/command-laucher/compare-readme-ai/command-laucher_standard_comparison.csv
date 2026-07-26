@@ -1,0 +1,5 @@
+project,tool,aggregation,completeness_score,atrak_score,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score,winner_correctness
+command-laucher,README-Gen,mean,85.71,100.0,100.0,0.0,33.33,0.0,0.0,100.0,38.89,README-Gen
+command-laucher,README-Gen,best,85.71,100.0,100.0,0.0,60.0,0.0,0.0,100.0,43.33,
+command-laucher,README-Gen,worst,85.71,100.0,100.0,0.0,20.0,0.0,0.0,100.0,36.67,
+command-laucher,README-AI,single,57.14,33.33,100.0,0.0,20.0,0.0,0.0,100.0,36.67,README-Gen

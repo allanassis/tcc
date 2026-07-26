@@ -1,0 +1,5 @@
+project,tool,aggregation,completeness_score,atrak_score,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score,winner_correctness
+jq,README-Gen,mean,100.0,100.0,100.0,100.0,46.67,100.0,100.0,100.0,91.11,README-Gen
+jq,README-Gen,best,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,
+jq,README-Gen,worst,100.0,100.0,100.0,100.0,20.0,100.0,100.0,100.0,86.67,
+jq,README-AI,single,57.14,66.67,100.0,100.0,0.0,0.0,0.0,33.33,38.89,README-Gen

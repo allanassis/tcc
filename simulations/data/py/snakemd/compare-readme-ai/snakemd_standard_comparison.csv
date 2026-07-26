@@ -1,0 +1,5 @@
+project,tool,aggregation,completeness_score,atrak_score,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score,winner_correctness
+snakemd,README-Gen,mean,85.71,100.0,100.0,0.0,20.0,0.0,0.0,100.0,36.66,README-AI
+snakemd,README-Gen,best,85.71,100.0,100.0,0.0,60.0,0.0,0.0,100.0,43.33,
+snakemd,README-Gen,worst,85.71,100.0,100.0,0.0,0.0,0.0,0.0,100.0,33.33,
+snakemd,README-AI,single,71.43,66.67,100.0,100.0,100.0,0.0,0.0,100.0,66.67,README-AI

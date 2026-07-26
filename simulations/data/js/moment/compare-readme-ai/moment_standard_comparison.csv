@@ -1,0 +1,5 @@
+project,tool,aggregation,completeness_score,atrak_score,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score,winner_correctness
+moment,README-Gen,mean,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,README-Gen
+moment,README-Gen,best,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,
+moment,README-Gen,worst,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,
+moment,README-AI,single,71.43,100.0,100.0,100.0,60.0,0.0,0.0,33.33,48.89,README-Gen
