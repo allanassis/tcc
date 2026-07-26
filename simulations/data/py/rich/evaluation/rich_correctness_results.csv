@@ -1,0 +1,5 @@
+project,readme,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score
+rich,data1.md,100.00,100.00,80.00,50.00,42.86,100.00,78.81
+rich,data2.md,100.00,100.00,80.00,100.00,83.33,100.00,93.89
+rich,data3.md,100.00,100.00,80.00,100.00,66.67,100.00,91.11
+rich,average,100.00,100.00,80.00,83.33,64.29,100.00,87.94

@@ -1,0 +1,5 @@
+project,readme,domain_concepts,execution_facts,usage_patterns,atrak_score
+jq,data1.md,1,1,1,100
+jq,data2.md,1,1,1,100
+jq,data3.md,1,1,1,100
+jq,average,1,1,1,100

@@ -1,0 +1,5 @@
+project,readme,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score
+notes-cli,data1.md,100,60,40,0,0,100,50.00
+notes-cli,data2.md,100,60,60,0,28.57,100,58.10
+notes-cli,data3.md,100,60,20,20,14.29,100,52.38
+notes-cli,average,100,60,40.00,6.67,14.29,100,53.49

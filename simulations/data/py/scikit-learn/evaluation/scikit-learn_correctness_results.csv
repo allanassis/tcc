@@ -1,0 +1,5 @@
+project,readme,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score
+scikit-learn,data1.md,100.00,100.00,60.00,33.33,100.00,100.00,82.22
+scikit-learn,data2.md,100.00,100.00,80.00,33.33,85.71,100.00,83.17
+scikit-learn,data3.md,100.00,100.00,80.00,33.33,85.71,100.00,83.17
+scikit-learn,average,100.00,100.00,73.33,33.33,90.48,100.00,82.86

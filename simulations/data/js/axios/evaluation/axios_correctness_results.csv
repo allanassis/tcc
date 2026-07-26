@@ -1,0 +1,5 @@
+project,readme,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score
+axios,data1.md,100,100,100,85.71,87.5,100,95.54
+axios,data2.md,100,100,100,83.33,90.91,100,95.71
+axios,data3.md,100,100,100,100,90.91,100,98.48
+axios,average,100,100,100,89.68,89.77,100,96.58

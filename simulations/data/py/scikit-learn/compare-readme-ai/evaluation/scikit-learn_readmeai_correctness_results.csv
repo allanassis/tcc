@@ -1,0 +1,3 @@
+project,readme,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score
+scikit-learn,scikit_readme_readmeai.md,100.00,100.00,20.00,0.00,0.00,33.33,42.22
+scikit-learn,average,100.00,100.00,20.00,0.00,0.00,33.33,42.22
