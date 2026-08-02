@@ -1,4 +1,0 @@
-project,readme,tool,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score,domain_concepts,execution_facts,usage_patterns,atrak_score,completeness_project_title,completeness_overview,completeness_installation,completeness_usage,completeness_api_reference,completeness_license,completeness_core_functionality
-snakemd,data1.md (best),README-Gen (paper),100,0,60,0,0,100,43.33,1,1,1,100,1,1,1,1,1,1,1
-snakemd,data3.md (worst),README-Gen (paper),100,0,0,0,0,100,33.33,1,1,1,100,1,1,1,1,1,1,0
-snakemd,snakemd_readme_readmeai.md,readme-ai,100,100,80,0,0,33.33,52.22,1,1,0,66.67,1,1,1,0,0,1,1
