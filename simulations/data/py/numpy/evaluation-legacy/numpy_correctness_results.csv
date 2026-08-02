@@ -1,5 +1,0 @@
-project,readme,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score
-numpy,data1.md,100,100,80,80,100,100,93.33
-numpy,data2.md,100,100,80,80,100,100,93.33
-numpy,data3.md,100,100,60,80,100,100,90.00
-numpy,average,100,100,73.33,80,100,100,92.22

@@ -1,5 +1,0 @@
-project,readme,title_score,overview_score,installation_score,usage_score,api_score,license_score,correctness_score
-snakemd,data1.md,100,0,60,0,0,100,43.33
-snakemd,data2.md,100,0,20,0,0,100,36.67
-snakemd,data3.md,100,0,0,0,0,100,33.33
-snakemd,average,100,0,26.67,0,0,100,37.78
